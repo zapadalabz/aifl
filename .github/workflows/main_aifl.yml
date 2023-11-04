@@ -7,7 +7,11 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: 'aifl'                   # set this to your Azure WebApp name
+  AZURE_WEBAPP_PACKAGE_PATH: '.'              # set this to the path of your app's content
+  NODE_VERSION: '18.x'                        # set this to the Node.js version you are using
 
 jobs:
   build:
@@ -16,15 +20,47 @@ jobs:
       CI: false
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-      - name: npm install, build
-        run: npm run build-prod
+      - name: Configure npm cache directory
+        run: npm config set cache C:\npm\cache
+
+      # Cache client node_modules
+      - name: Cache client node_modules
+        id: cache-client
+        uses: actions/cache@v2
+        with:
+          path: client/node_modules
+          key: ${{ runner.os }}-client-${{ hashFiles('**/client/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-client-
+
+      - name: Install and build client app
+        run: |
+          npm install
+          npm run build
+        working-directory: ./client
+
+      # Cache server node_modules
+      - name: Cache server node_modules
+        id: cache-server
+        uses: actions/cache@v2
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-server-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-server-
+
+      - name: Install server dependencies
+        run: npm install
+        working-directory: .
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
