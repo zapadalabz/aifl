@@ -27,7 +27,6 @@ jobs:
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
-        needs: build-app
         id: deploy-to-webapp
         with:
           app-name: 'aifl'
