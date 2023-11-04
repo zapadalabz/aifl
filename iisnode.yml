@@ -1,5 +1,0 @@
-nodeProcessCountPerApplication: 1
-node_env: production
-loggingEnabled: true
-devErrorsEnabled: false
-nodeProcessCommandLine: "%programfiles%\nodejs\%WEBSITE_NODE_DEFAULT_VERSION%\node.exe" --harmony-generators
