@@ -13,9 +13,18 @@ function App() {
         sayHello();
     }, []);
 
+    useEffect(() => {
+      const getPrompts = async () => {
+            const response = await fetch("/prompts");
+            const body = await response.json();
+            console.log(body);
+          };
+          getPrompts();
+      }, []);
+
   return (
     <div className="App">
-      Hello World
+      Hello World and prompts
     </div>
   );
 }
