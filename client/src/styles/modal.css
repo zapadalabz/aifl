@@ -1,0 +1,122 @@
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+    padding-top: 0px;
+    cursor: default;
+  }
+  
+.modal-main {
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 25px;
+  border: 4px solid #225633;
+  width: 80%;
+}
+
+.modal-close-btn{
+  float: right;
+  color: #225633;
+  background-color: white;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.modal-close-btn:hover{
+  color: red;
+}
+
+
+.display-block {
+  display: block;
+}
+
+.display-none {
+  display: none;
+}
+
+.favModal{
+  color:black;
+  cursor: default;
+}
+
+.favModalTopBar{
+  height: 2.5rem;
+  border-bottom: 2px solid #225633;
+}
+
+.favMenu{
+  /**/
+}
+
+.favMenuIcon{
+  color: #225633;
+  cursor: pointer;
+}
+
+.favMenuIcon:hover{
+  color: red;
+}
+
+.favViews{
+    margin-top: 0.75rem;
+    height: 350px;
+}
+
+.publicCheckbox{
+  padding-top: 5px;
+  align-items: right;
+  text-align: right;
+}
+
+.favTags{
+  display: flex;
+  align-items: center;
+  text-align: left;
+  height: 2.5rem;
+  margin-bottom: 0px;
+  margin-left: 10px;
+}
+.tagItem{
+  font-weight: bold;
+  margin-right: 5px;
+  border: 1px solid #225633;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-radius: 25px;
+}
+.tagX{
+  margin-left: 5px;
+  color:#225633;
+  cursor: pointer;
+}
+.tagX:hover{
+  color:red;
+}
+
+.promptList{
+  height: 100%;
+  overflow-x: hidden;
+  /**/
+}
+
+.promptItem{
+  cursor: pointer;
+  border: 2px solid #225633;
+  padding: 0.25rem;
+  margin-bottom: 0.25rem;
+  width: 100%;
+}
+
+.promptItem:hover{
+  border: 2px solid red;
+}

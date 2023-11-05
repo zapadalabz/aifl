@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  width:100%;
 }
 
 .App-logo {
@@ -35,4 +36,24 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.navSpacer{
+  padding-top: 4.5rem;
+}
+
+.xlsxIcon{
+  height: 40px;
+  cursor: pointer;
+}
+
+.xlsxInputButton{
+  display: none;
+}
+
+.varItem{
+  cursor: pointer;
+}
+.varItem:hover{
+  color: red;
 }
