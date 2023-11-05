@@ -1,9 +1,7 @@
 const { MongoClient } = require("mongodb");
 const Db = process.env.DATABASE_URL;
-const client = new MongoClient(Db, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const Db_name = process.env.DATABASE_NAME;
+const client = new MongoClient(Db);
  
 var _db;
  
@@ -15,7 +13,7 @@ module.exports = {
         console.error(e);
       }
   
-      _db = client.db("BH");
+      _db = client.db(Db_name);
       console.log("Connected to Mongo.")
       return (_db === undefined ? false : true);
     },
