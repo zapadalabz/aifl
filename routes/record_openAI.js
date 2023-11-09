@@ -94,7 +94,7 @@ recordOPENAIRoutes.route("/openAI/post").post(async function (req, response) {
         response.end();
     } catch (error) {
         console.error(error);
-        response.status(500).send('Error generating text');
+        response.status(500).send(error);
     } 
 });
 
