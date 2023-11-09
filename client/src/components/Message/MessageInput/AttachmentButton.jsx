@@ -5,6 +5,7 @@ import { prefix } from "./settings";
 import ButtonA from "./ButtonA";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons/faSpinner";
 
 const AttachmentButtonF = ({ className, children, ...rest }, ref) => {
   const cName = `${prefix}-button--attachment`;
@@ -16,13 +17,18 @@ const AttachmentButtonF = ({ className, children, ...rest }, ref) => {
     }
   }));
 
+  var currentIcon = <FontAwesomeIcon icon={faPaperclip}/>;
+
+  if(rest.attachState.icon === "Loading"){
+    currentIcon = <FontAwesomeIcon icon={faSpinner} spin/>;
+  }
+
   return (
     <>
     <ButtonA ref = {attachRef}
       {...rest}
       className={classNames(cName, className)}
-      icon={<FontAwesomeIcon icon={faPaperclip} 
-      />}
+      icon={currentIcon}
     >
       {children}
     </ButtonA>

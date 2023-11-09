@@ -11,8 +11,8 @@ async function getUsers(){
 
 
 // get user by ID aka check if user already has a mongo profile   /users/get/:ID
-async function getUserByID(ID){
-    const response = await fetch(`${PROXY}/users/get${ID}`)
+async function getUserByEmail(email){
+    const response = await fetch(`${PROXY}/users/get/${email}`)
 
     const output = await response.json();
     
@@ -35,12 +35,12 @@ async function getUserByID(ID){
     favPrompts: [...promptIDs]
 */
 
-async function upsertUser(ID, userObject){
+async function upsertUser(userObject){
+
     const response = await fetch(`${PROXY}/users/upsert`, {
         method: "POST",
         body: JSON.stringify(
-            {"ID": ID, 
-            "userObject": userObject, 
+            {"userObject": userObject, 
         }),
         headers: {
         'Content-Type': 'application/json'
@@ -122,4 +122,4 @@ async function deletePrompt(promptID){
     return output;
 }
 
-export {getUsers, getUserByID, upsertUser, getPrompts, getUserFavourites, addPrompt, updatePrompt, deletePrompt};
+export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, addPrompt, updatePrompt, deletePrompt};

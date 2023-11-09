@@ -13,6 +13,7 @@ var port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 app.use(require("./routes/record"));
+app.use(require("./routes/record_openAI"));
 
 const dbo = require("./db/conn");
 

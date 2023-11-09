@@ -9,6 +9,7 @@ const ButtonAF = ({
   icon,
   border,
   labelPosition,
+  attachState,
   ...rest
 }, ref) => {
   const cName = `${prefix}-button`;
@@ -40,7 +41,7 @@ const ButtonAF = ({
       {lPos === "left" && children}
       <span className="fa-layers fa-fw">
         {icon}
-        {rest.attachCount>0?<span className="fa-layers-counter fa-2x fa-layers-bottom-right attachCounter">{rest.attachCount}</span>:""}
+        {attachState.count>0?<span className="fa-layers-counter fa-2x fa-layers-bottom-right attachCounter">{attachState.count}</span>:""}
       </span>
       {lPos === "right" && children}
     </button>

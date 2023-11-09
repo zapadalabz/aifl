@@ -22,6 +22,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
+          cache: 'npm' # This will automatically cache npm modules according to the lock file
 
       - name: npm install, build, and test
         run: |

@@ -83,7 +83,7 @@ import React, {
       sendButton,
       attachButton,
       onAttachClick,
-      attachCount,
+      attachState,
       ...rest
     },
     ref
@@ -203,7 +203,7 @@ import React, {
               ref = {attachRef}
               onClick={onAttachClick}
               disabled={disabled === true || attachDisabled === true}
-              attachCount = {attachCount}
+              attachState = {attachState}
             />
           </div>
         )}
@@ -230,7 +230,7 @@ import React, {
           <div className={`${cName}__tools`}>
             <SendButton
               onClick={send}
-              disabled={disabled === true || stateSendDisabled === true}
+              disabled={attachState.icon==="Loading"?true:disabled === true || stateSendDisabled === true}
             />
           </div>
         )}
@@ -309,10 +309,10 @@ import React, {
     onAttachClick: PropTypes.func,
 
     /**
-     * attachCount - number of attached files
+     * attachState - {count: , icon: paperClip/Loading}
      */
 
-    attachCount: PropTypes.number,
+    attachState: PropTypes.object,
   };
   
   MessageInputInner.propTypes = MessageInput.propTypes;
@@ -328,7 +328,7 @@ import React, {
     sendButton: true,
     attachButton: true,
     attachDisabled: false,
-    attachCount: 0,
+    attachState: {count: 0, icon: "paperClip"},
     onAttachClick: noop,
     onChange: noop,
     onSend: noop,

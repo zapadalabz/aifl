@@ -4,6 +4,9 @@ import './styles/chat.css';
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 import React, { useState, useEffect } from 'react';
+import jwt_decode from "jwt-decode";
+import { googleLogout } from '@react-oauth/google';
+import { getUserByEmail } from "./scripts/mongo";
 
 import LeftSideNav from './components/LeftSideNav';
 import RightSideNav from './components/RightSideNav';
@@ -12,6 +15,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import ChatPage from './components/ChatPage';
 import FavModal from './components/Modal/FavModal';
+import Signin from './components/Signin';
 
 
 /* userObject //BrightSpace API whomai: {"Identifier":"1163","FirstName":"Zach","LastName":"Medendorp","Pronouns":null,"UniqueName":"zmedendorp@branksome.on.ca","ProfileIdentifier":"FhoF5s161j"}
@@ -23,34 +27,40 @@ import FavModal from './components/Modal/FavModal';
     favPrompts: [...promptIDs]
   */
  
+ //with Google login
  /*
 const userObject = {
-  ID: null,
   firstName: "",
   lastName: "",
   email: "",
-  roleID: null,
   favPrompts: [],
+  picture: ""
 };*/
 
 function App() {
   const [showFav, setShowFav] = useState(false);
 
+  const [ user, setUser ] = useState(null);
 
-  useEffect(()=>{
-    //if(!user.ID){
-      //window.open("https://localhost:5000/login",'_blank');
-      /*login().then((whoami) => {
-        setUser({...user,
-        ID: whoami.Identifier,
-        firstName: whoami.FirstName,
-        lastName: whoami.LastName,
-        email: whoami.UniqueName,
-        });
-        console.log(whoami);
-      }*/
-    //}
-  },[])
+ //Check if user has a persistent login in localStorage
+  useEffect(() => {
+    const persistentLogin = localStorage.getItem('userCredential');
+    //console.log(jwt_decode(persistentLogin));
+    if(persistentLogin){
+      //getUser
+      getUserByEmail(jwt_decode(persistentLogin).email).then((res)=>{
+        setUser(res);
+      }).catch((err)=>console.log(err));
+    }
+  },[]);
+
+  const handleLogOut = () => {
+    console.log("here");
+    googleLogout();
+    setUser(null);
+    localStorage.removeItem('userCredential');
+    console.log("logged Out");
+  };
 
   const handleResponse = (responseData) => {
     //setPrompt(responseData);
@@ -58,18 +68,25 @@ function App() {
   };
 
       return(
-      <div className="App">      
-        <Container>
-          <LeftSideNav setShowFav={setShowFav}/>
-          <Row>          
-            <div>
-              <ChatPage/>
-            </div>
-          </Row>
-          <RightSideNav/>
-        </Container>
-        <FavModal showFav={showFav} setShowFav={setShowFav} handleResponse={handleResponse}/>                  
-      </div>
+        <div className="App">
+          {!user ?
+          <Signin setUser={setUser}/>
+          :
+          <>
+          <Container>
+            <LeftSideNav setShowFav={setShowFav} handleLogOut={handleLogOut}/>
+            <Row>          
+              <div>
+                <ChatPage/>
+              </div>
+            </Row>
+            <RightSideNav/>
+          </Container>
+          <FavModal showFav={showFav} setShowFav={setShowFav} handleResponse={handleResponse} setUser={setUser} user={user}/> 
+          </>          
+          }     
+                           
+        </div>
       );
 }
 

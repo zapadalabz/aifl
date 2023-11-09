@@ -5,7 +5,7 @@ import { faPenToSquare } from "@fortawesome/free-regular-svg-icons/faPenToSquare
 import { faStar as regStar} from "@fortawesome/free-regular-svg-icons/faStar";
 import { faStar as solidStar} from "@fortawesome/free-solid-svg-icons/faStar";
 
-const PromptView = ({promptList, handleEditClick, handleRemoveFavClick, handleToggleFav, user}) => {
+const SearchView = ({promptList, handleEditClick, handleRemoveFavClick, handleToggleFav, user}) => {
 
     const inUserFav = (_id) =>{
         if(user.favPrompts.indexOf(_id) >= 0){
@@ -36,4 +36,4 @@ const PromptView = ({promptList, handleEditClick, handleRemoveFavClick, handleTo
     </div>);
 }
 
-export { PromptView };
+export { SearchView };

@@ -9,6 +9,7 @@ import Stack from 'react-bootstrap/Stack';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 
+
 export default function ChatPage() {
   const inputRef = useRef();
   const fileInput = useRef();
@@ -16,15 +17,17 @@ export default function ChatPage() {
   const [msgInputValue, setMsgInputValue] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
-  //const [running, setRunning] = useState(false);
-  let running = false;
+  //const [sendDisabled, setStateSendDisabled] = useState(true);
   const [attachText, setAttachText] = useState([]);
-  const [attachCount, setAttachCount] = useState(0);
+  const [attachState, setAttachState] = useState({
+    count:0,
+    icon: "paperClip"
+  });
 
   useEffect(()=>{
       //console.log(attachText);
-      setAttachCount(attachText.length);
-  },[attachText])
+      setAttachState(prevState => ({ ...prevState, count: attachText.length, icon: "paperClip"}));
+  },[attachText]);
 
   useEffect(()=>{
     console.log(openAIEnabled.current);
@@ -38,7 +41,7 @@ export default function ChatPage() {
   const handleSend = (message,c1,c2,c3) => {
     message = c2;
 
-    if(!running){
+    if(!openAIEnabled.current){
       openAIEnabled.current = true;
       setChatHistory(prevChatHistory => [
         ...prevChatHistory,
@@ -70,15 +73,15 @@ export default function ChatPage() {
         //setFiles([...files, ...event.target.files]);
         //console.log(event.target.files);
         extractPDFText(event.target.files).then((text) => setAttachText(text));
+        setAttachState(prevState => ({ ...prevState, icon: "Loading"}));
         event.target.value = ''
     }
 
   return (
     <div className="mainChat">
             <MessageDisplay messages={chatHistory}/>
-              
             <div as={MessageInput} className="messageInputDIV">
-                <MessageInput ref={inputRef} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={true} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachCount={attachCount}/>
+                <MessageInput ref={inputRef} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={true} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachState={attachState}/>
                 <Overlay target={inputRef.current!==undefined?inputRef.current.attachButton.buttonA.button:inputRef} show={showOverlay} placement="top" rootClose onHide={() => setShowOverlay(false)}>
                   {({
                     placement: _placement,
