@@ -80,6 +80,15 @@ async function getUserFavourites(favIDs){
     return output;
 }
 
+//search prompts, returns a list of prompts that contain a partial match to tag,
+async function searchPromptsByTag(tag){
+
+    const response = await fetch(`${PROXY}/prompts/search/${tag}`)
+    const output = await response.json();
+    console.log(output);
+    return output;
+}
+
 //Add new Prompt /prompts/add
 async function addPrompt(promptObject){
     delete promptObject._id;
@@ -122,4 +131,4 @@ async function deletePrompt(promptID){
     return output;
 }
 
-export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, addPrompt, updatePrompt, deletePrompt};
+export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, searchPromptsByTag, addPrompt, updatePrompt, deletePrompt};

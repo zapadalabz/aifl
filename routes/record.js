@@ -131,6 +131,28 @@ recordRoutes.route("/prompts/get/:IDs").get(async function (req, response) {
 
 });
 
+recordRoutes.route("/prompts/search/:tag").get(async function (req, response) {
+  let db_connect = dbo.getDb();
+  let tag = req.params.tag;
+  //returns a case-insensitive match to the tag input
+  let myquery = { tags: {$elemMatch: {
+      $regex: new RegExp(tag, 'i')}
+      }
+    };
+  db_connect
+    .collection("Prompts") 
+    .find(myquery)
+    .toArray() // Convert the cursor to an array
+    .then((data) => {
+      response.json(data);
+    })
+    .catch((error) => {
+      console.error(error);
+      response.status(500).json({ error: 'Internal Server Error' });
+    });
+
+});
+
 //Add new Prompt
 recordRoutes.route("/prompts/add").post(async function (req, response) {
   let db_connect = dbo.getDb();
@@ -192,41 +214,5 @@ recordRoutes.route("/prompts/delete/:ID").get(async function (req, response) {
 
 });
 
-//TASKS///
-
-  //Create new Task
-  recordRoutes.route("/tasks/update").post(async function (req, response) {
-    let db_connect = dbo.getDb();
-
-    let myquery = {email: req.body.email}; //users have a unique email
-
-    let myobj = {$set:{
-        title: req.body.title,
-        system: req.body.system,
-        prompt: req.body.prompt,
-        email: req.body.email,
-        model: req.body.model,
-        xlsx: req.body.xlsx,
-        keywords: req.body.keywords
-    }};
-
-    let options = {upsert : true};
-
-    let result = await db_connect.collection("Task").updateOne(myquery, myobj, options);
-    response.send(result).status(204);
-});
-
-recordRoutes.route("/tasks/getByEmail/:email").get(async function (req, response) {
-  let db_connect = dbo.getDb();
-  let myquery = { email: req.params.email };
-  db_connect
-    .collection("Task") 
-    .find(myquery)
-    .then((data) => {
-      //console.log(data);
-      response.json(data);
-    });
-
-});
 
 module.exports = recordRoutes;

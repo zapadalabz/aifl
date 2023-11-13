@@ -30,6 +30,7 @@ const FavModal = ({showFav, setShowFav, handleResponse, setUser, user}) => {
 
     const [editPrompt, setEditPrompt] = useState(emptyPrompt);
     const [promptList, setPromptList] = useState([]);
+    const [searchTag, setSearchTag] = useState("");
     const [view, setView] = useState("fav");//fav, search, add
 
     useEffect(()=>{
@@ -38,6 +39,18 @@ const FavModal = ({showFav, setShowFav, handleResponse, setUser, user}) => {
         })
         // eslint-disable-next-line
     },[]);
+
+    useEffect(()=>{
+        if(searchTag!==""){
+            mongo.searchPromptsByTag(searchTag).then((prompts)=>{
+                setPromptList(prompts);
+            })
+        }else if(view==="fav"){
+            handleStarClick();
+        }else{
+            handleSearchClick();
+        }
+    },[searchTag])
 
     const handleClose = () => {
         //setPost(empty object)
@@ -101,9 +114,10 @@ const FavModal = ({showFav, setShowFav, handleResponse, setUser, user}) => {
                 <div className='favModal'>
                     <div className="favModalTopBar">
                         <div className='favMenu'>
-                            <FontAwesomeIcon className="fa-2x favMenuIcon float-start" icon={view==="fav"? solidStar:regStar} onClick={handleStarClick}/>
-                            <FontAwesomeIcon className="fa-2x favMenuIcon float-start" icon={faMagnifyingGlass} onClick={handleSearchClick}/>
-                            <FontAwesomeIcon className="fa-2x favMenuIcon float-end" icon={faPlus} onClick={handlePlusClick}/>
+                            <FontAwesomeIcon className="fa-2x favMenuIcon float-start" icon={view==="fav"? solidStar:regStar} style={view==="fav"&&{"color":"red"}} onClick={handleStarClick}/>
+                            <FontAwesomeIcon className="fa-2x favMenuIcon float-start" icon={faMagnifyingGlass} style={view==="search"&&{"color":"red"}} onClick={handleSearchClick}/>
+                            {view==="search"&&<input className="searchInput" value={searchTag} onChange={(e) => setSearchTag(e.target.value)} placeholder="Enter Tag"></input>}
+                            <FontAwesomeIcon className="fa-2x favMenuIcon float-end" icon={faPlus} style={view==="add"&&{"color":"red"}} onClick={handlePlusClick}/>
                         </div>
                     </div>
                     <div className='favViews'>

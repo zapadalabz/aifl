@@ -118,5 +118,63 @@
 }
 
 .promptItem:hover{
-  border: 2px solid red;
+  border: 3px solid #225633;
+}
+
+.promptContent{
+  display: flex;
+
+  width: 90%;
+}
+
+.promptIconMenu{
+  display: flex;
+  width: 10%;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.promptPreview{
+  display: flex;
+  text-align: start;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  max-height: 5rem;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  
+  scrollbar-color: #225633 transparent;
+  scrollbar-width: thin;
+}
+
+.promptPreview::-webkit-scrollbar-thumb {
+  background-color: #225633;
+  border: none; /* Remove the border */
+}
+
+.promptPreview::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.promptPreview::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+/* Disable default scrollbar styles in Webkit browsers */
+*::-webkit-scrollbar {
+  width: 12px; /* Or your preferred width */
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+*::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+
+.searchInput{
+  width:max-content;
 }
