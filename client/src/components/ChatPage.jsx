@@ -37,6 +37,8 @@ export default function ChatPage() {
     }
   },[chatHistory]);
 
+  const messagesEndRef = useRef();
+  useEffect(() => messagesEndRef.current.scrollIntoView({ behavior: "smooth" }),[chatHistory]);
 
   const handleSend = (message,c1,c2,c3) => {
     message = c2;
@@ -74,12 +76,12 @@ export default function ChatPage() {
         //console.log(event.target.files);
         extractPDFText(event.target.files).then((text) => setAttachText(text));
         setAttachState(prevState => ({ ...prevState, icon: "Loading"}));
-        event.target.value = ''
+        event.target.value = '';
     }
-
+  
   return (
     <div className="mainChat">
-            <MessageDisplay messages={chatHistory}/>
+            <MessageDisplay messages={chatHistory} messagesEndRef={messagesEndRef}/>
             <div as={MessageInput} className="messageInputDIV">
                 <MessageInput ref={inputRef} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={true} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachState={attachState}/>
                 <Overlay target={inputRef.current!==undefined?inputRef.current.attachButton.buttonA.button:inputRef} show={showOverlay} placement="top" rootClose onHide={() => setShowOverlay(false)}>

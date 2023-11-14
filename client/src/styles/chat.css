@@ -69,6 +69,7 @@
     margin-bottom: 0px;
     padding: 20px;
     text-align: left;
+    white-space: pre-wrap;
 }
 
 .messageOutgoing{
@@ -79,6 +80,7 @@
     text-align: right;
     border-style: solid;
     border-image: linear-gradient(to right, white, #225633, white) 1;
+    white-space: pre-wrap;
 }
 
 .messageAvatar{

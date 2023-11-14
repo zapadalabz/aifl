@@ -1,18 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import ribbit from "../../img/ribbit.jpg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileExcel } from "@fortawesome/free-solid-svg-icons/faFileExcel";
+//import { faFileExcel } from "@fortawesome/free-solid-svg-icons/faFileExcel";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 
 const MessageDisplay = (props) => {
     let messages = props.messages;
-
+    let messagesEndRef = props.messagesEndRef;
+    
     const AlwaysScrollToBottom = () => {
-        const messagesEndRef = useRef();
-        useEffect(() => messagesEndRef.current.scrollIntoView({ behavior: "smooth" }));
         return <div ref={messagesEndRef} />;
       };
     
+    console.log("message");
 
     return(
         <div className="messageListContainer">
