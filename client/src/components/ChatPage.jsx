@@ -29,16 +29,16 @@ export default function ChatPage() {
       setAttachState(prevState => ({ ...prevState, count: attachText.length, icon: "paperClip"}));
   },[attachText]);
 
+  const messagesEndRef = useRef();
+  
   useEffect(()=>{
     console.log(openAIEnabled.current);
     if(openAIEnabled.current){
       openAIEnabled.current = false;
       postOpenAIChatResponse(chatHistory, setChatHistory);
     }
+    messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   },[chatHistory]);
-
-  const messagesEndRef = useRef();
-  useEffect(() => messagesEndRef.current.scrollIntoView({ behavior: "smooth" }),[chatHistory]);
 
   const handleSend = (message,c1,c2,c3) => {
     message = c2;
