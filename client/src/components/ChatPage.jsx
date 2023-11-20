@@ -10,15 +10,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 
 
-export default function ChatPage({chatHistory, setChatHistory}) {
+export default function ChatPage({chatHistory, setChatHistory, selectedModel}) {
   const inputRef = useRef();
   const fileInput = useRef();
 
   const openAIEnabled = useRef(false);
   const [msgInputValue, setMsgInputValue] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
-  //const [chatHistory, setChatHistory] = useState([]);
-  //const [sendDisabled, setStateSendDisabled] = useState(true);
+
   const [attachText, setAttachText] = useState([]);
   const [attachState, setAttachState] = useState({
     count:0,
@@ -37,7 +36,7 @@ export default function ChatPage({chatHistory, setChatHistory}) {
     console.log(openAIEnabled.current);
     if(openAIEnabled.current){
       openAIEnabled.current = false;
-      postOpenAIChatResponse(chatHistory, setChatHistory);
+      postOpenAIChatResponse(chatHistory, setChatHistory, selectedModel);
     }
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   },[chatHistory]);

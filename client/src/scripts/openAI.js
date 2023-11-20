@@ -21,6 +21,7 @@ async function handleStreamedResponseMessages(response, chatHistory, setChatHist
             partialText += decoder.decode(value);
 
             chatHistory[lengthChatHistory-1].content = partialText;
+            console.log(partialText);
             setChatHistory([...chatHistory]);
         }
 
@@ -83,8 +84,9 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
 }
 
 
-export async function postOpenAIChatResponse(chatHistory, setChatHistory){
+export async function postOpenAIChatResponse(chatHistory, setChatHistory, model){
     const lengthChatHistory = chatHistory.length;
+    console.log(model);
 
     let msgHistory = []; //Include the attachments into the history
     for(let i = 0; i < lengthChatHistory-1; i++){
@@ -99,7 +101,7 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory){
     try {
         fetch(`${PROXY}/openAI/postChat`, { 
             method: "POST",
-            body: JSON.stringify({"chatHistory": msgHistory}),
+            body: JSON.stringify({"chatHistory": msgHistory, "model": model}),
             headers: {
             'Content-Type': 'application/json'
             },

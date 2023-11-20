@@ -19,7 +19,7 @@
 
 .left:hover{
     background-image: linear-gradient(to right, black 90%, rgba(0, 0, 0, 0));
-    width: 120px;
+    width: 150px;
 }
 
 .left:hover > .sidebarContent{
@@ -33,7 +33,11 @@
 
 .right:hover{
     background-image: linear-gradient(to left, black 90%, rgba(0, 0, 0, 0));
-    width: 100px;
+    width: 175px;
+}
+
+.right:hover > .sidebarContent{
+    display: block;
 }
 
 .navBrand{

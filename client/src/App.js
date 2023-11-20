@@ -42,6 +42,7 @@ function App() {
 
   const [ user, setUser ] = useState(null);
   const [ chatHistory, setChatHistory] = useState([]);
+  const [selectedModel, setSelectedModel] = useState("GPT35_16K");
 
  //Check if user has a persistent login in localStorage
   useEffect(() => {
@@ -82,10 +83,10 @@ function App() {
             <LeftSideNav setShowFav={setShowFav} handleLogOut={handleLogOut} clearChat={clearChat}/>
             <Row>          
               <div>
-                <ChatPage chatHistory={chatHistory} setChatHistory={setChatHistory}/>
+                <ChatPage chatHistory={chatHistory} setChatHistory={setChatHistory} selectedModel={selectedModel}/>
               </div>
             </Row>
-            <RightSideNav/>
+            <RightSideNav selectedModel={selectedModel} setSelectedModel={setSelectedModel}/>
           </Container>
           <FavModal showFav={showFav} setShowFav={setShowFav} handleResponse={handleResponse} setUser={setUser} user={user}/> 
           </>          

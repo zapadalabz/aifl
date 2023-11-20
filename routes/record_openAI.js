@@ -9,7 +9,7 @@ const recordOPENAIRoutes = express.Router();
 const OPENAI_KEY = process.env.OPENAI_KEY;
 const OPENAI_RESOURCE = process.env.OPENAI_RESOURCE;
 
-const model = process.env.OPENAI_DEPLOYMENT;
+const model = "GPT35_16K";//process.env.OPENAI_DEPLOYMENT;
 const apiVersion = process.env.OPENAI_API_VERSION;
 
 // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
@@ -103,22 +103,24 @@ recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response)
     let systemMessage = "You are an experienced teacher helping fellow colleagues."
     let messages = [{"role" : "system", "content" : systemMessage},];
     let chatHistory = req.body.chatHistory;
+    let currentModel = req.body.model;
 
     messages = messages.concat(chatHistory);
 
-    //console.log('Non-streaming:');
     try {
-        const result = await openai.chat.completions.create({
-            model,
+        const stream = await openai.chat.completions.create({
+            model: currentModel,
             messages: messages,
+            stream: true,
         });
-        response.write(result.choices[0].message?.content);
-        //console.log(result.choices[0].message?.content);
-        response.end();
+
+        for await (const chunk of stream){
+            response.write(chunk.choices[0]?.delta?.content || '');
+        }
     } catch (error) {
         console.error(error);
         response.status(500).send('Error generating text');
-    } 
+    }
 });
 
   module.exports = recordOPENAIRoutes;
