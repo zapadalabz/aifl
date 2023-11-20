@@ -41,6 +41,7 @@ function App() {
   const [showFav, setShowFav] = useState(false);
 
   const [ user, setUser ] = useState(null);
+  const [ chatHistory, setChatHistory] = useState([]);
 
  //Check if user has a persistent login in localStorage
   useEffect(() => {
@@ -67,6 +68,10 @@ function App() {
     console.log(responseData);
   };
 
+  const clearChat = () => {
+    setChatHistory([]);
+  }
+
       return(
         <div className="App">
           {!user ?
@@ -74,10 +79,10 @@ function App() {
           :
           <>
           <Container>
-            <LeftSideNav setShowFav={setShowFav} handleLogOut={handleLogOut}/>
+            <LeftSideNav setShowFav={setShowFav} handleLogOut={handleLogOut} clearChat={clearChat}/>
             <Row>          
               <div>
-                <ChatPage/>
+                <ChatPage chatHistory={chatHistory} setChatHistory={setChatHistory}/>
               </div>
             </Row>
             <RightSideNav/>

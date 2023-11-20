@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/sidenav.css"
 
-const LeftSideNav = ({setShowFav, handleLogOut}) => {
+const LeftSideNav = ({setShowFav, handleLogOut, clearChat}) => {
 
     return(
         <div className="sidenav left">
@@ -11,10 +11,13 @@ const LeftSideNav = ({setShowFav, handleLogOut}) => {
                 </div>
                 <hr></hr>
                 <div className="itemContainer">
-                    <div className="navItem" onClick={()=> setShowFav(true)}>
+                    <div className="navItem" onClick={() => setShowFav(true)}>
                         Favourites
                     </div>
-                    <div className="navItem" onClick={()=>handleLogOut()}>
+                    <div className="navItem" onClick={() => clearChat()}>
+                        Clear Chat
+                    </div>
+                    <div className="navItem" onClick={() =>handleLogOut()}>
                         Sign Out
                     </div>                    
                 </div>

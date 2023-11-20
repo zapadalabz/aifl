@@ -10,13 +10,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
 
 
-export default function ChatPage() {
+export default function ChatPage({chatHistory, setChatHistory}) {
   const inputRef = useRef();
   const fileInput = useRef();
+
   const openAIEnabled = useRef(false);
   const [msgInputValue, setMsgInputValue] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
-  const [chatHistory, setChatHistory] = useState([]);
+  //const [chatHistory, setChatHistory] = useState([]);
   //const [sendDisabled, setStateSendDisabled] = useState(true);
   const [attachText, setAttachText] = useState([]);
   const [attachState, setAttachState] = useState({
@@ -28,6 +29,7 @@ export default function ChatPage() {
       //console.log(attachText);
       setAttachState(prevState => ({ ...prevState, count: attachText.length, icon: "paperClip"}));
   },[attachText]);
+
 
   const messagesEndRef = useRef();
   
