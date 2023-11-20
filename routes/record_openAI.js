@@ -9,8 +9,8 @@ const recordOPENAIRoutes = express.Router();
 const OPENAI_KEY = process.env.OPENAI_KEY;
 const OPENAI_RESOURCE = process.env.OPENAI_RESOURCE;
 
-const model = 'BH35Turbo';
-const apiVersion = '2023-06-01-preview';
+const model = process.env.OPENAI_DEPLOYMENT;
+const apiVersion = process.env.OPENAI_API_VERSION;
 
 // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
 const openai = new OpenAI({
