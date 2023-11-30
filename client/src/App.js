@@ -42,7 +42,7 @@ function App() {
 
   const [ user, setUser ] = useState(null);
   const [ chatHistory, setChatHistory] = useState([]);
-  const [selectedModel, setSelectedModel] = useState("GPT35_16K");
+  const [selectedModel, setSelectedModel] = useState("GPT40");
 
  //Check if user has a persistent login in localStorage
   useEffect(() => {

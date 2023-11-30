@@ -125,3 +125,45 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model)
     
     return;
 }
+
+export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, model){
+    const lengthChatHistory = chatHistory.length;
+    console.log(model);
+
+    let msgHistory = []; //Include the attachments into the history
+    for(let i = 0; i < lengthChatHistory-1; i++){
+        let chat = chatHistory[i];
+        if(chat.role === "user"){
+            msgHistory.push({"role" : chat.role, "content" : chat.content + chat.attachments.map((text, index) => `\n\ndocument_${index}: \`\`\`${text}\`\`\``).join('')});
+        }else{
+            msgHistory.push({"role" : chat.role, "content" : chat.content});
+        } 
+    }
+
+    try {
+        fetch(`http://localhost:5001/openAI/postMessage`, { 
+            method: "POST",
+            body: JSON.stringify({"chatHistory": msgHistory, "model": model}),
+            headers: {
+            'Content-Type': 'application/json'
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response;
+            })
+            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
+            .catch((error) => {
+                console.error('Fetch error:', error);
+            });        
+        
+    } catch (err) {
+        alert("Error: " + err.message);
+    } finally {
+        //nothing
+    }
+    
+    return;
+}

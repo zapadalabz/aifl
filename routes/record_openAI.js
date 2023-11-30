@@ -117,6 +117,7 @@ recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response)
         for await (const chunk of stream){
             response.write(chunk.choices[0]?.delta?.content || '');
         }
+        response.end();
     } catch (error) {
         console.error(error);
         response.status(500).send('Error generating text');

@@ -66,3 +66,13 @@
         color: red;
         font-size: large;
     }
+.itemContainer{
+    text-align: start;
+    justify-content: left;
+    align-items: start;
+    margin-left: 2rem;;
+}
+
+.modelLabel{
+    margin-left: 0.5rem;
+}

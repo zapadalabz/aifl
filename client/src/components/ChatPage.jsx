@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from "react";
 //import { MessageInput} from "@chatscope/chat-ui-kit-react";
-import { postOpenAIChatResponse } from "../scripts/openAI";
+import { postOpenAIChatResponse, postPythonOpenAIChatResponse } from "../scripts/openAI";
 import MessageDisplay from "./Message/MessageDisplay";
 import { extractPDFText } from "../scripts/processFile";
 import MessageInput from "./Message/MessageInput/MessageInput";
