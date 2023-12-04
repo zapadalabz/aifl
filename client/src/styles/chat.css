@@ -26,6 +26,7 @@
     flex-grow: 1;
     border-top: 0px;
     flex-shrink: initial;
+    max-width: 100%;
 }
 
 .messageListContainer{
@@ -92,10 +93,15 @@
 
 .attachIcon{
     cursor: pointer;
+    color: #6ea9d7;
 }
 
 .attachIcon:hover{
     color: red;
+}
+
+.attachIconMessage{
+    color: #6ea9d7;
 }
 
 .attachCounter{

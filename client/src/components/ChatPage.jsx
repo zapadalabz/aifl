@@ -3,6 +3,7 @@ import React, {useState, useRef, useEffect} from "react";
 import { postOpenAIChatResponse, postPythonOpenAIChatResponse } from "../scripts/openAI";
 import MessageDisplay from "./Message/MessageDisplay";
 import { extractPDFText } from "../scripts/processFile";
+import { extractText } from "../scripts/handleFiles";
 import MessageInput from "./Message/MessageInput/MessageInput";
 import Overlay from 'react-bootstrap/Overlay';
 import Stack from 'react-bootstrap/Stack';
@@ -33,10 +34,10 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel}) {
   const messagesEndRef = useRef();
   
   useEffect(()=>{
-    console.log(openAIEnabled.current);
+    //console.log(openAIEnabled.current);
     if(openAIEnabled.current){
       openAIEnabled.current = false;
-      postOpenAIChatResponse(chatHistory, setChatHistory, selectedModel);
+      postPythonOpenAIChatResponse(chatHistory, setChatHistory, selectedModel);
     }
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   },[chatHistory]);
@@ -75,7 +76,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel}) {
     const handleFileChange = event => {
         //setFiles([...files, ...event.target.files]);
         //console.log(event.target.files);
-        extractPDFText(event.target.files).then((text) => setAttachText(text));
+        extractText(event.target.files).then((text) => setAttachText(text) );
         setAttachState(prevState => ({ ...prevState, icon: "Loading"}));
         event.target.value = '';
     }
@@ -98,7 +99,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel}) {
                       {...props}
                       style={{
                         position: 'absolute',
-                        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.0)',
                         padding: '2px 5px',
                         color: 'white',
                         borderRadius: 3,

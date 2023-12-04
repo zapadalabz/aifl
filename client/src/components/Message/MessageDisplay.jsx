@@ -12,7 +12,7 @@ const MessageDisplay = (props) => {
         return <div ref={messagesEndRef} />;
       };
     
-    console.log("message");
+    //console.log("message");
 
     return(
         <div className="messageListContainer">
@@ -33,7 +33,7 @@ const MessageDisplay = (props) => {
                                 <>
                                 <br/><br/>
                                 <span className="fa-layers fa-fw">
-                                    <FontAwesomeIcon className="fa-2x" icon={faFilePdf} />
+                                    <FontAwesomeIcon className="fa-2x attachIconMessage" icon={faFilePdf} />
                                     <span className="fa-layers-counter fa-2x" style={{background:'Tomato', cursor:'default'}}>{m.attachments.length}</span>
                                 </span>
                                 </>:""}

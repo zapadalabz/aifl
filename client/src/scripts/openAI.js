@@ -1,4 +1,4 @@
-import { PROXY } from './config';
+import { PROXY, FLASK_PROXY } from './config';
 
 async function handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory) {
     const reader = response.body.getReader();
@@ -21,7 +21,7 @@ async function handleStreamedResponseMessages(response, chatHistory, setChatHist
             partialText += decoder.decode(value);
 
             chatHistory[lengthChatHistory-1].content = partialText;
-            console.log(partialText);
+            //console.log(partialText);
             setChatHistory([...chatHistory]);
         }
 
@@ -128,9 +128,11 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model)
 
 export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, model){
     const lengthChatHistory = chatHistory.length;
-    console.log(model);
+    //console.log(model);
 
-    let msgHistory = []; //Include the attachments into the history
+    let systemMessage = "You are an experienced teacher helping fellow colleagues.";
+    let msgHistory = [{"role" : "system", "content" : systemMessage}]; //Include the attachments into the history
+
     for(let i = 0; i < lengthChatHistory-1; i++){
         let chat = chatHistory[i];
         if(chat.role === "user"){
@@ -141,7 +143,7 @@ export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, 
     }
 
     try {
-        fetch(`http://localhost:5001/openAI/postMessage`, { 
+        fetch(`${FLASK_PROXY}/openAI/postMessage`, { 
             method: "POST",
             body: JSON.stringify({"chatHistory": msgHistory, "model": model}),
             headers: {

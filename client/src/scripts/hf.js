@@ -4,7 +4,7 @@ async function handleStreamedResponse(response,setOutput) {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let partialText = '';
-    //console.log(reader);
+    
     try {
         while (true) {
             const { done, value } = await reader.read();
