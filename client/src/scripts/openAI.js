@@ -86,9 +86,10 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
 
 export async function postOpenAIChatResponse(chatHistory, setChatHistory, model){
     const lengthChatHistory = chatHistory.length;
-    console.log(model);
+    
+    let systemMessage = "You are an experienced teacher helping fellow colleagues.";
+    let msgHistory = [{"role" : "system", "content" : systemMessage}]; //Include the attachments into the history
 
-    let msgHistory = []; //Include the attachments into the history
     for(let i = 0; i < lengthChatHistory-1; i++){
         let chat = chatHistory[i];
         if(chat.role === "user"){

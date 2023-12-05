@@ -1,9 +1,8 @@
 import React, {useState, useRef, useEffect} from "react";
 //import { MessageInput} from "@chatscope/chat-ui-kit-react";
-import { postOpenAIChatResponse, postPythonOpenAIChatResponse } from "../scripts/openAI";
+import { postOpenAIChatResponse } from "../scripts/openAI";
 import MessageDisplay from "./Message/MessageDisplay";
 import { extractPDFText } from "../scripts/processFile";
-import { extractText } from "../scripts/handleFiles";
 import MessageInput from "./Message/MessageInput/MessageInput";
 import Overlay from 'react-bootstrap/Overlay';
 import Stack from 'react-bootstrap/Stack';
@@ -37,7 +36,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel}) {
     //console.log(openAIEnabled.current);
     if(openAIEnabled.current){
       openAIEnabled.current = false;
-      postPythonOpenAIChatResponse(chatHistory, setChatHistory, selectedModel);
+      postOpenAIChatResponse(chatHistory, setChatHistory, selectedModel);
     }
     messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
   },[chatHistory]);
@@ -76,7 +75,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel}) {
     const handleFileChange = event => {
         //setFiles([...files, ...event.target.files]);
         //console.log(event.target.files);
-        extractText(event.target.files).then((text) => setAttachText(text) );
+        extractPDFText(event.target.files).then((text) => setAttachText(text) );
         setAttachState(prevState => ({ ...prevState, icon: "Loading"}));
         event.target.value = '';
     }

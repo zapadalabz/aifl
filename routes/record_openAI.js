@@ -100,17 +100,14 @@ recordOPENAIRoutes.route("/openAI/post").post(async function (req, response) {
 
 
 recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response) {
-    let systemMessage = "You are an experienced teacher helping fellow colleagues."
-    let messages = [{"role" : "system", "content" : systemMessage},];
+    //chatHistory contains system message
     let chatHistory = req.body.chatHistory;
     let currentModel = req.body.model;
-
-    messages = messages.concat(chatHistory);
 
     try {
         const stream = await openai.chat.completions.create({
             model: currentModel,
-            messages: messages,
+            messages: chatHistory,
             stream: true,
         });
 
