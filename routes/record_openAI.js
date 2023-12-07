@@ -9,17 +9,11 @@ const recordOPENAIRoutes = express.Router();
 const OPENAI_KEY = process.env.OPENAI_KEY;
 const OPENAI_RESOURCE = process.env.OPENAI_RESOURCE;
 
-const model = "GPT35_16K";//process.env.OPENAI_DEPLOYMENT;
+//const model = "GPT35_16K";//process.env.OPENAI_DEPLOYMENT;
 const apiVersion = process.env.OPENAI_API_VERSION;
 
-// Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
-const openai = new OpenAI({
-    apiKey: OPENAI_KEY,
-    baseURL: `https://${OPENAI_RESOURCE}.openai.azure.com/openai/deployments/${model}`,
-    defaultQuery: { 'api-version': apiVersion },
-    defaultHeaders: { 'api-key': OPENAI_KEY },
-  });
 
+/*
 // This section will help you get a list of all the records.
 recordOPENAIRoutes.route("/openAI/:prompt").get(async function (req, response) {
     console.log("here");
@@ -96,13 +90,21 @@ recordOPENAIRoutes.route("/openAI/post").post(async function (req, response) {
         console.error(error);
         response.status(500).send(error);
     } 
-});
+});*/
 
 
 recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response) {
     //chatHistory contains system message
     let chatHistory = req.body.chatHistory;
     let currentModel = req.body.model;
+    
+    // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
+    const openai = new OpenAI({
+        apiKey: OPENAI_KEY,
+        baseURL: `https://${OPENAI_RESOURCE}.openai.azure.com/openai/deployments/${currentModel}`,
+        defaultQuery: { 'api-version': apiVersion },
+        defaultHeaders: { 'api-key': OPENAI_KEY },
+    });
 
     try {
         const stream = await openai.chat.completions.create({
