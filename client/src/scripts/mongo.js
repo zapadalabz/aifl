@@ -33,6 +33,7 @@ async function getUserByEmail(email){
     email:
     roleID:
     favPrompts: [...promptIDs]
+    managebacID:
 */
 
 async function upsertUser(userObject){
@@ -131,4 +132,27 @@ async function deletePrompt(promptID){
     return output;
 }
 
-export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, searchPromptsByTag, addPrompt, updatePrompt, deletePrompt};
+
+//CommentBank
+
+async function getComments(email){
+    const response = await fetch(`${PROXY}/commentbank/get/${email}`)
+    const output = await response.json();
+    
+    return output;
+}
+
+async function updateComments(commentObj){
+    //updates existing prompt
+    const response = await fetch(`${PROXY}/commentbank/update`, {
+        method: "POST",
+        body: JSON.stringify(
+            {commentObj: commentObj,
+        }),
+        headers: {
+        'Content-Type': 'application/json'
+        },
+    });
+}
+
+export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, searchPromptsByTag, addPrompt, updatePrompt, deletePrompt, updateComments, getComments};

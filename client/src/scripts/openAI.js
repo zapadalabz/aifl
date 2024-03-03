@@ -87,7 +87,8 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
 export async function postOpenAIChatResponse(chatHistory, setChatHistory, model){
     const lengthChatHistory = chatHistory.length;
     
-    let systemMessage = "You are an experienced teacher helping fellow colleagues.";
+    let systemMessage = `You are an experienced teacher helping fellow colleagues.
+    If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$`;
     let msgHistory = [{"role" : "system", "content" : systemMessage}]; //Include the attachments into the history
 
     for(let i = 0; i < lengthChatHistory-1; i++){
@@ -131,7 +132,8 @@ export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, 
     const lengthChatHistory = chatHistory.length;
     //console.log(model);
 
-    let systemMessage = "You are an experienced teacher helping fellow colleagues.";
+    let systemMessage = `You are an experienced teacher helping fellow colleagues.
+    If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$`;
     let msgHistory = [{"role" : "system", "content" : systemMessage}]; //Include the attachments into the history
 
     for(let i = 0; i < lengthChatHistory-1; i++){
@@ -161,6 +163,39 @@ export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, 
             .catch((error) => {
                 console.error('Fetch error:', error);
             });        
+        
+    } catch (err) {
+        alert("Error: " + err.message);
+    } finally {
+        //nothing
+    }
+    
+    return;
+}
+
+export async function postGeneratePossibleComments(title, desc){
+    
+    let systemMessage = `You are an experienced teacher helping fellow colleagues to generate a list of possible comments given certain criteria. 
+    Keep your response to 5 possible comments.
+    In the place of a student's name use the hastag symbol #.
+    Separate each comment with a line break. Do not number the comments.`;
+    let msg = [{"role" : "system", "content" : systemMessage}];
+    let model = 'GPT4';
+
+    msg.push({"role" : "user", "content" : `${title} and ${desc}`});
+
+    try {
+        const output = await fetch(`${PROXY}/openAI/postChatNoStream`, { 
+            method: "POST",
+            body: JSON.stringify({"chatHistory": msg, "model": model}),
+            headers: {
+            'Content-Type': 'application/json'
+            },
+        }).catch((error) => {
+            console.error('Fetch error:', error);
+        });
+        return (await output.json()).message;      
+                    
         
     } catch (err) {
         alert("Error: " + err.message);

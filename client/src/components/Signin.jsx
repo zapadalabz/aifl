@@ -37,6 +37,7 @@ export default function Signin({setUser}){
                                         email: tempUser.email,
                                         favPrompts: [],
                                         picture: tempUser.picture,
+                                        managebacID: null,
                                     };
                                     upsertUser(newUser).then(()=>{
                                             setUser(newUser);

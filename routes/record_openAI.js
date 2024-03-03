@@ -123,4 +123,36 @@ recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response)
     }
 });
 
-  module.exports = recordOPENAIRoutes;
+
+recordOPENAIRoutes.route("/openAI/postChatNoStream").post(async function (req, response) {
+    //chatHistory contains system message
+    let chatHistory = req.body.chatHistory;
+    let currentModel = req.body.model;
+    //console.log(chatHistory);
+    
+    // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
+    const openai = new OpenAI({
+        apiKey: OPENAI_KEY,
+        baseURL: `https://${OPENAI_RESOURCE}.openai.azure.com/openai/deployments/${currentModel}`,
+        defaultQuery: { 'api-version': apiVersion },
+        defaultHeaders: { 'api-key': OPENAI_KEY },
+    });
+
+    try {
+        const result = await openai.chat.completions.create({
+            model: currentModel,
+            messages: chatHistory,
+            stream: false,
+        });
+
+        //response.write(result.choices[0].message?.content);
+        //console.log(result.choices[0].message?.content);
+        response.send({"message": result.choices[0].message?.content});
+    } catch (error) {
+        console.error(error);
+        response.status(500).send('Error generating text');
+    }
+});
+
+
+module.exports = recordOPENAIRoutes;

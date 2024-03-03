@@ -4,6 +4,7 @@ import './styles/chat.css';
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
 import React, { useState, useEffect } from 'react';
+import { Routes, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { googleLogout } from '@react-oauth/google';
 import { getUserByEmail } from "./scripts/mongo";
@@ -16,6 +17,8 @@ import Row from 'react-bootstrap/Row';
 import ChatPage from './components/ChatPage';
 import FavModal from './components/Modal/FavModal';
 import Signin from './components/Signin';
+import ExcelReader from './components/ExcelReader';
+import ReportAssistant from './components/ReportAssistant/ReportAssistant';
 
 
 /* userObject //BrightSpace API whomai: {"Identifier":"1163","FirstName":"Zach","LastName":"Medendorp","Pronouns":null,"UniqueName":"zmedendorp@branksome.on.ca","ProfileIdentifier":"FhoF5s161j"}
@@ -25,6 +28,7 @@ import Signin from './components/Signin';
     email:
     roleID:
     favPrompts: [...promptIDs]
+    managebacID:
   */
  
  //with Google login
@@ -78,18 +82,24 @@ function App() {
           {!user ?
           <Signin setUser={setUser}/>
           :
-          <>
-          <Container>
-            <LeftSideNav setShowFav={setShowFav} handleLogOut={handleLogOut} clearChat={clearChat}/>
-            <Row>          
-              <div>
-                <ChatPage chatHistory={chatHistory} setChatHistory={setChatHistory} selectedModel={selectedModel}/>
-              </div>
-            </Row>
-            <RightSideNav selectedModel={selectedModel} setSelectedModel={setSelectedModel}/>
-          </Container>
-          <FavModal showFav={showFav} setShowFav={setShowFav} handleResponse={handleResponse} setUser={setUser} user={user}/> 
-          </>          
+          <Routes>
+            <Route exact path="/" element={
+              <>
+              <Container>
+              <LeftSideNav setShowFav={setShowFav} handleLogOut={handleLogOut} clearChat={clearChat}/>
+              <Row>          
+                <div>
+                  <ChatPage chatHistory={chatHistory} setChatHistory={setChatHistory} selectedModel={selectedModel}/>
+                </div>
+              </Row>
+              <RightSideNav selectedModel={selectedModel} setSelectedModel={setSelectedModel}/>
+            </Container>
+            <FavModal showFav={showFav} setShowFav={setShowFav} handleResponse={handleResponse} setUser={setUser} user={user}/> 
+            </>
+            } />
+            <Route path="/ExcelReader" exact element= {<ExcelReader/>} />
+            <Route path="/ReportAssistant" exact element= {<ReportAssistant user={user} setUser={setUser}/>} />
+          </Routes>        
           }     
                            
         </div>

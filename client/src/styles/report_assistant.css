@@ -1,0 +1,128 @@
+.reportContainer {
+    height: 100vh;
+}
+
+.reportMain{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 0px solid black;
+    padding: 0.0rem;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+}
+
+.reportNavLeft {
+    padding: 0.0rem;
+    border: 0px solid black;
+    margin: 0;
+}
+
+.reportNavBottom{
+    height: 30%;
+    padding: 0.0rem;
+    border: 0px solid black;
+}
+
+.studentBoxContainer {
+    display: block;
+    width: 100%;
+    height: 95%;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    border-radius: 25px;
+    border: 4px solid #225633;
+    scroll-snap-align: center;
+}
+
+.studentBoxName{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: black;
+}
+
+.studentBoxGrades{
+    color: black;
+    margin-bottom: 10px;
+}
+
+.commentLabel label{
+    margin-left: 0.3rem;
+}
+
+.input-group-text{
+    cursor: default;
+}
+
+.input-group>.form-select {
+    flex: 0.5 0.5 auto;
+}
+
+.course-select {
+    width: auto;
+    max-width:none;
+}
+
+.commentHeading {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--bs-body-color);
+    text-align: center;
+    white-space: nowrap;
+    background-color: white;
+    cursor: pointer;
+}
+
+.commentHeadingContainer {
+    background-color: white;
+    height: 100%
+}
+.commentHeading:hover {
+    background-color: var(--bs-tertiary-bg);
+    font-weight: 600;
+}
+
+.selectedHeading {
+    background-color: var(--bs-tertiary-bg);
+    font-weight: 600;
+}
+
+.selectableCommentsContainer{
+    background-color: var(--bs-tertiary-bg);
+}
+
+.navBottomContainer{
+    background-color: var(--bs-tertiary-bg);
+}
+.navBottomContainer .row>*{
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Modal */
+
+.commentTitleInput {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.generateCommentWand {
+    cursor: pointer;
+}
+
+.generateCommentWand:hover {
+    color: var(--bs-primary);
+}
