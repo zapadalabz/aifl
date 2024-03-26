@@ -1,158 +1,207 @@
 import { PROXY } from "./config";
+import { toast } from 'react-toastify';
 
-// get all users /users
+async function getUsers() {
+    try {
+        const response = await fetch(`${PROXY}/users`);
+        const output = await response.json();
 
-async function getUsers(){
-    const response = await fetch(`${PROXY}/users`)
-    const output = await response.json();
-    
-    return output;
-}
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-
-// get user by ID aka check if user already has a mongo profile   /users/get/:ID
-async function getUserByEmail(email){
-    const response = await fetch(`${PROXY}/users/get/${email}`)
-
-    const output = await response.json();
-    
-    if (output != null){
         return output;
+    } catch (error) {
+        toast.error(error.toString());
     }
-    else{
-        return false;
+}
+
+async function getUserByEmail(email) {
+    try {
+        const response = await fetch(`${PROXY}/users/get/${email}`);
+        const output = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        if (output != null) {
+            return output;
+        } else {
+            return false;
+        }
+    } catch (error) {
+        toast.error(error.toString());
     }
 }
 
-//Create or Update a User    /users/update
+async function upsertUser(userObject) {
+    try {
+        const response = await fetch(`${PROXY}/users/upsert`, {
+            method: "POST",
+            body: JSON.stringify({ "userObject": userObject }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
 
-/* userObject //BrightSpace API whomai: {"Identifier":"1163","FirstName":"Zach","LastName":"Medendorp","Pronouns":null,"UniqueName":"zmedendorp@branksome.on.ca","ProfileIdentifier":"FhoF5s161j"}
-    ID:
-    firstName:
-    lastName:
-    email:
-    roleID:
-    favPrompts: [...promptIDs]
-    managebacID:
-*/
+        if (!response.ok) {
+            throw new Error(response.json());
+        }
 
-async function upsertUser(userObject){
-
-    const response = await fetch(`${PROXY}/users/upsert`, {
-        method: "POST",
-        body: JSON.stringify(
-            {"userObject": userObject, 
-        }),
-        headers: {
-        'Content-Type': 'application/json'
-        },
-    });
-    return response;
+        return response;
+    } catch (error) {
+        toast.error(error.toString());
+    }
 }
 
-/*
-Prompt Object
-  _id:
-  prompt:
-  authorID:
-  public: true/false
-  numFavs:
-  tags: []
-  dateCreated:
-  lastEditDate:
-*/
-
-//get all prompts /prompts
-async function getPrompts(){
-    //returns all prompts
-    const response = await fetch(`${PROXY}/prompts`)
-    const output = await response.json();
-    
-    return output;
+async function getPrompts() {
+    try {
+        const response = await fetch(`${PROXY}/prompts`);
+        const output = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return output;
+    } catch (error) {
+        toast.error(error.toString());
+    }
 }
 
-//get prompts by ID(array) used to get user favPrompts    /prompts/get/:IDs
-async function getUserFavourites(favIDs){
-    //gets previously favourited prompts
-    let IDs = encodeURIComponent(JSON.stringify(favIDs));
-    const response = await fetch(`${PROXY}/prompts/get/${IDs}`)
-    const output = await response.json();
-    
-    return output;
+async function getUserFavourites(favIDs) {
+    try {
+        let IDs = encodeURIComponent(JSON.stringify(favIDs));
+        const response = await fetch(`${PROXY}/prompts/get/${IDs}`);
+        const output = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return output;
+    } catch (error) {
+        toast.error(error.toString());
+    }
 }
 
-//search prompts, returns a list of prompts that contain a partial match to tag,
-async function searchPromptsByTag(tag){
-
-    const response = await fetch(`${PROXY}/prompts/search/${tag}`)
-    const output = await response.json();
-    console.log(output);
-    return output;
+async function searchPromptsByTag(tag) {
+    try {
+        const response = await fetch(`${PROXY}/prompts/search/${tag}`);
+        const output = await response.json();
+        //console.log(output);
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return output;
+    } catch (error) {
+        toast.error(error.toString());
+    }
 }
 
-//Add new Prompt /prompts/add
-async function addPrompt(promptObject){
-    delete promptObject._id;
-    //post new promptObject
-    const response = await fetch(`${PROXY}/prompts/add`, {
-        method: "POST",
-        body: JSON.stringify({promptObject: promptObject}),
-        headers: {
-        'Content-Type': 'application/json'
-        },
-    });
-
-    return response;
-
+async function addPrompt(promptObject) {
+    try {
+        delete promptObject._id;
+        const response = await fetch(`${PROXY}/prompts/add`, {
+            method: "POST",
+            body: JSON.stringify({ promptObject: promptObject }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        if (!response.ok) {
+            throw new Error(response.json());
+        }
+        return response;
+    } catch (error) {
+        toast.error(error.toString());
+    }
 }
 
 //Update existing prompt with promptID(_id) /prompts/update
 async function updatePrompt(promptObject){
 
     //updates existing prompt
-    const response = await fetch(`${PROXY}/prompts/update`, {
-        method: "POST",
-        body: JSON.stringify(
-            {promptObject: promptObject,
-        }),
-        headers: {
-        'Content-Type': 'application/json'
-        },
-    });
+    try{
+        const response = await fetch(`${PROXY}/prompts/update`, {
+            method: "POST",
+            body: JSON.stringify(
+                {promptObject: promptObject,
+            }),
+            headers: {
+            'Content-Type': 'application/json'
+            },
+        });
+        if (!response.ok) {
+            throw new Error(response.json());
+        }
+        return response;
+    } catch (error) {
+        toast.error(error.toString());
+    }
 
-    return response;
+    
 }
 
 //Update existing prompt with promptID(_id) /prompts/update
 async function deletePrompt(promptID){
 
-    const response = await fetch(`${PROXY}/prompts/delete/${promptID}`)
-    const output = await response.json();
+    try{
+        const response = await fetch(`${PROXY}/prompts/delete/${promptID}`)
+        const output = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return output;
+    }catch(error){
+        toast.error(error.toString());
+    }
     
-    return output;
 }
 
 
 //CommentBank
 
+/*
+    commentObj = {
+      email:
+      filename:
+      comments: [{title, desc, comments}, ...]
+  */
+
 async function getComments(email){
-    const response = await fetch(`${PROXY}/commentbank/get/${email}`)
-    const output = await response.json();
+    try{
+        const response = await fetch(`${PROXY}/commentbank/get/${email}`)
+        const output = await response.json();
     
-    return output;
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return output;
+    }catch(error){
+        toast.error(error.toString());
+    }
 }
 
-async function updateComments(commentObj){
+async function updateComments(email, filename, commentBank){
+    let commentObj = {
+        email: email,
+        filename: filename,
+        comments: commentBank
+    }
     //updates existing prompt
-    const response = await fetch(`${PROXY}/commentbank/update`, {
-        method: "POST",
-        body: JSON.stringify(
-            {commentObj: commentObj,
-        }),
-        headers: {
-        'Content-Type': 'application/json'
-        },
-    });
+    try{
+        const response = await fetch(`${PROXY}/commentbank/update`, {
+            method: "POST",
+            body: JSON.stringify(
+                {commentObj: commentObj,
+            }),
+            headers: {
+            'Content-Type': 'application/json'
+            },
+        });
+        if (!response.ok) {
+            throw new Error(response.json());
+        }
+    }catch(error){
+        toast.error(error.toString());
+    }
+    
 }
 
 export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, searchPromptsByTag, addPrompt, updatePrompt, deletePrompt, updateComments, getComments};

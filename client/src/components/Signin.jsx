@@ -54,6 +54,7 @@ export default function Signin({setUser}){
                         console.log('Login Failed');
                         }}
                         auto_select
+                        use_fedcm_for_prompt={true}
                     />
                     :
                     <>

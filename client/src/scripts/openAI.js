@@ -1,4 +1,5 @@
 import { PROXY, FLASK_PROXY } from './config';
+import { toast } from 'react-toastify';
 
 async function handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory) {
     const reader = response.body.getReader();
@@ -24,9 +25,9 @@ async function handleStreamedResponseMessages(response, chatHistory, setChatHist
             //console.log(partialText);
             setChatHistory([...chatHistory]);
         }
-
+        
     } catch (error) {
-        console.error(error);
+        toast.error(error.toString());
     }
 }
 
@@ -71,11 +72,12 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
             })
             .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
             .catch((error) => {
-                console.error('Fetch error:', error);
+                toast.error(error.toString());
             });        
         
     } catch (err) {
         alert("Error: " + err.message);
+        toast.error(err.message);
     } finally {
         //nothing
     }
@@ -84,7 +86,7 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
 }
 
 
-export async function postOpenAIChatResponse(chatHistory, setChatHistory, model){
+export async function postOpenAIChatResponse(chatHistory, setChatHistory, model, token){
     const lengthChatHistory = chatHistory.length;
     
     let systemMessage = `You are an experienced teacher helping fellow colleagues.
@@ -105,22 +107,70 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model)
             method: "POST",
             body: JSON.stringify({"chatHistory": msgHistory, "model": model}),
             headers: {
-            'Content-Type': 'application/json'
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             },
         })
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! Status: ${response.status}:${response.statusText}`);
                 }
                 return response;
             })
             .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
             .catch((error) => {
-                console.error('Fetch error:', error);
+                toast.error(error.toString());
             });        
         
     } catch (err) {
         alert("Error: " + err.message);
+        toast.error(err.message);
+    } finally {
+        //nothing
+    }
+    
+    return;
+}
+
+export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHistory, model, token, searchIndex){
+    const lengthChatHistory = chatHistory.length;
+    
+    let systemMessage = `You are an experienced teacher helping fellow colleagues.
+    If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$`;
+    let msgHistory = [{role : "system", content: systemMessage}];
+
+    for(let i = 0; i < lengthChatHistory-1; i++){
+        let chat = chatHistory[i];
+        if(chat.role === "user"){
+            msgHistory.push({role : chat.role, content: chat.content + chat.attachments.map((text, index) => `\n\ndocument_${index}: \`\`\`${text}\`\`\``).join('')});
+        }else{
+            msgHistory.push({role : chat.role, content: chat.content});
+        } 
+    }
+
+    try {
+        fetch(`${PROXY}/openAI/postChatAzureSearch`, { 
+            method: "POST",
+            body: JSON.stringify({"chatHistory": msgHistory, "model": model, "searchIndex": searchIndex}),
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}:${response.statusText}`);
+                }
+                return response;
+            })
+            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
+            .catch((error) => {
+                toast.error(error.toString());
+            });        
+        
+    } catch (err) {
+        alert("Error: " + err.message);
+        toast.error(err.message);
     } finally {
         //nothing
     }
@@ -155,17 +205,18 @@ export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, 
         })
             .then((response) => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! Status: ${response.status}:${response.statusText}`);
                 }
                 return response;
             })
             .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
             .catch((error) => {
-                console.error('Fetch error:', error);
+                toast.error(error.toString());
             });        
         
     } catch (err) {
         alert("Error: " + err.message);
+        toast.error(err.message);
     } finally {
         //nothing
     }
@@ -173,7 +224,7 @@ export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, 
     return;
 }
 
-export async function postGeneratePossibleComments(title, desc){
+export async function postGeneratePossibleComments(title, desc, token){
     
     let systemMessage = `You are an experienced teacher helping fellow colleagues to generate a list of possible comments given certain criteria. 
     Keep your response to 5 possible comments.
@@ -189,16 +240,18 @@ export async function postGeneratePossibleComments(title, desc){
             method: "POST",
             body: JSON.stringify({"chatHistory": msg, "model": model}),
             headers: {
-            'Content-Type': 'application/json'
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
             },
         }).catch((error) => {
-            console.error('Fetch error:', error);
+            toast.error(error.toString());
         });
         return (await output.json()).message;      
                     
         
     } catch (err) {
         alert("Error: " + err.message);
+        toast.error(err.message);
     } finally {
         //nothing
     }

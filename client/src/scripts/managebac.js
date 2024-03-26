@@ -1,4 +1,5 @@
 import { PROXY } from "./config";
+import { toast } from 'react-toastify';
 
 async function updateUser(userObject){
     try{
@@ -9,6 +10,10 @@ async function updateUser(userObject){
             }
             });
         var managebacID = await managebacResponse.json();
+
+        if (!managebacResponse.ok) {
+            throw new Error(managebacID.toString());
+        }
 
         userObject["managebacID"] = managebacID.id;
         console.log(Object.keys(userObject));
@@ -22,10 +27,14 @@ async function updateUser(userObject){
             },
         });
 
+        if (!update.ok) {
+            throw new Error(`HTTP error! Status: ${update.status}`);
+        }
+
         console.log(await update.json());
     }
     catch(error){
-        console.log(error);
+        toast.error(error.toString());
     }
 }
 
@@ -38,6 +47,10 @@ async function getActiveClasses(teacherID){
                 'Content-Type': 'application/json',
             }
         });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         
         var classes = await response.json();
         let activeClasses = [];
@@ -53,12 +66,13 @@ async function getActiveClasses(teacherID){
             var program_code = classJSON.program_code;
             var class_id = classJSON.id;
             const reporting_period = await getAcademicYear(program_code);
+            //console.log(reporting_period);
             activeClasses.push({"id": class_id, "reporting_period": reporting_period, "code": item.code, "program": program_code});
         }
         return activeClasses;
     }
     catch(error){
-        console.log(error);
+        toast.error(error.toString());
     }
 }
 
@@ -70,6 +84,11 @@ async function initClassLists(email, course){
                 'Content-Type': 'application/json',
             }
         });
+
+        if (!studentResponse.ok) {
+            throw new Error(`HTTP error! Status: ${studentResponse.status}`);
+        }
+
         var student_ids = (await studentResponse.json()).student_ids;
         //console.log(student_ids);
         var studentList = [];
@@ -123,7 +142,7 @@ async function initClassLists(email, course){
         //console.log(await update.json());
     }
     catch(error){
-        console.log(error);
+        toast.error(error.toString());
         return null;
     }
 }
@@ -144,6 +163,9 @@ async function getCourses(email, courses){
                 }
             });
             let classResponse = await response.json();
+            if (!response.ok) {
+                throw new Error(classResponse.toString());
+            }
             //console.log(classResponse);
             if(classResponse){
                 classes[course.id] = classResponse;
@@ -152,7 +174,7 @@ async function getCourses(email, courses){
             }
         }
         catch(error){
-            console.log(error);
+            toast.error(error.toString());
         }
     }
     return classes;   
@@ -166,12 +188,14 @@ async function getSchoolDetails(){
                 'Content-Type': 'application/json',
             }
         });
-        
-        var details = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        //var details = await response.json();
         //console.log(details);
     }
     catch(error){
-        console.log(error);
+        toast.error(error.toString());
     }
 }
 
@@ -185,6 +209,11 @@ async function getAcademicYear(program){
         });
         
         var year = await response.json();
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
         var currentYear = year.academic_years.diploma.academic_years.length-1;
         //console.log(currentYear);
         var academic_terms = year.academic_years[program].academic_years[currentYear].academic_terms;
@@ -206,12 +235,34 @@ async function getAcademicYear(program){
         if (currentTerm) {
             return currentTerm;
         } else {
-            return null;
+            return {"id": null, "name": null};
         }
 
     }
     catch(error){
-        console.log(error);
+        toast.error(error.toString());
+    }
+}
+
+async function getUserRole(email){
+    try{
+        const response = await fetch(`${PROXY}/managebac/getRole/${email}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        var role = await response.json();
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        return role.role;
+    }
+    catch(error){
+        toast.error(error.toString());
     }
 }
 
@@ -223,4 +274,4 @@ async function getAcademicYear(program){
 
 
 
-export {updateUser, getCourses, initClassLists, getSchoolDetails, getAcademicYear, getActiveClasses};
+export {updateUser, getCourses, initClassLists, getSchoolDetails, getAcademicYear, getActiveClasses, getUserRole};

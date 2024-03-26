@@ -1,14 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
-import FloatingLabel from 'react-bootstrap/FloatingLabel'
-import InputGroup from 'react-bootstrap/InputGroup';
-import Button from 'react-bootstrap/Button';
+import React, { useContext } from "react";
 import Select from 'react-select';
-import { Form } from 'react-bootstrap';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row } from 'react-bootstrap';
 import StudentContext from "./StudentContext";
 
 
-export default function ReportNavLeft({courses, setSelectedCourses}) {
+export default function ReportNavLeft({courses}) {
     const {state, dispatch} = useContext(StudentContext);
     let options = [];
     for (const course of courses) {

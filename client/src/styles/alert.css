@@ -1,0 +1,28 @@
+.alert {
+    position: fixed; /* Changed from absolute to fixed */
+    left: 0;
+    right: 0;
+    top: -3rem; /* Start from above the screen */
+    height: 3rem;
+    border: 1px solid #225633;
+    background-color: #225633aa; /* example background color */
+    color: white; /* example text color */
+    z-index: 100;
+    opacity: 0;
+    transition: top 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.alert-error {
+    background-color: #ffcccc;
+    color: #ff0000;
+}
+
+.alert-success{
+    background-color: #ccffcc;
+    color: #00ff00;
+}
+
+.fade.show {
+    opacity: 1;
+    top: 0; /* Align to the top */
+}

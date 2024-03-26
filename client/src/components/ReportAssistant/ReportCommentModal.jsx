@@ -1,10 +1,9 @@
-import React, {useState} from "react";
+import React, {useState, useContext, useEffect} from "react";
 import Modal from "../Modal/Modal";
 import { Container, Row, Col } from 'react-bootstrap';
 
 import FloatingLabel from 'react-bootstrap/FloatingLabel'
 import InputGroup from 'react-bootstrap/InputGroup';
-import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -12,27 +11,50 @@ import { faWandMagic } from "@fortawesome/free-solid-svg-icons/faWandMagic";
 import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons/faWandMagicSparkles";
 
 import { postGeneratePossibleComments } from "../../scripts/openAI";
+import StudentContext from "./StudentContext";
 
-export default function ReportCommentModal({showModal, handleClose, index}) {
+export default function ReportCommentModal({showModal, handleClose, token}) {
+    const {state, dispatch} = useContext(StudentContext);
+    const index = state.selectedCommentHeading;
+    //console.log(index,state.commentBank[index].title);
+
     const [commentTitle, setCommentTitle] = useState("");
     const [commentDesc, setCommentDesc] = useState("");
     const [generatedComment, setGeneratedComment] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
-
+    
+    useEffect(() => {
+        if (state.commentBank && state.commentBank[index]) {
+            setCommentTitle(state.commentBank[index].title || "");
+            setCommentDesc(state.commentBank[index].desc || "");
+            setGeneratedComment(state.commentBank[index].comments || "");
+        }
+    }, [index, state.commentBank]);
 
     const handleGenerate = () => {
-        if(!isGenerating){
+        if(!isGenerating && commentTitle && commentDesc){
             setIsGenerating(true);
-            postGeneratePossibleComments(commentTitle, commentDesc).then((response) => {
+            postGeneratePossibleComments(commentTitle, commentDesc, token).then((response) => {
                 setGeneratedComment(response);
-                console.log(response);
+                //console.log(response);
                 setIsGenerating(false);
             });
         }
     }
 
+    const handleSave = () => {
+        dispatch({
+            type: 'UPDATE_COMMENT_BANK',
+            payload: {
+                index: index,
+                updates: {title: commentTitle, desc: commentDesc, comments: generatedComment},
+            }
+        });
+        handleClose();
+    }
+
     return(
-        <Modal show={showModal} handleClose={handleClose}>
+        <Modal show={showModal} handleClose={handleSave}>
             <Container>
                 <Row>
                     <Col xs={4}>

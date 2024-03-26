@@ -7,6 +7,7 @@
     flex-direction: column;
     height: 100%;
     border: 0px solid black;
+    margin: auto;
     padding: 0.0rem;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -20,7 +21,7 @@
 }
 
 .reportNavBottom{
-    height: 30%;
+    height: 35%;
     padding: 0.0rem;
     border: 0px solid black;
 }
@@ -71,6 +72,38 @@
     max-width:none;
 }
 
+.navBottomContainer{
+    background-color: var(--bs-tertiary-bg);
+}
+
+.navBottomContainer .row>*{
+    padding-right: 0;
+    padding-left: 0;
+}
+
+.commentMenu{
+    width: 100%;
+    height: 1.5rem;
+    padding-left: 1rem;
+}
+
+.commentMenuItem{
+    cursor: pointer;
+}
+
+.commentMenuItem:hover{
+    color: #225633;
+}
+
+.commentToggle{
+    position: relative;
+    top: -1.5rem;
+}
+
+.stopButton:hover{
+    color: red !important;
+}
+
 .commentHeading {
     display: flex;
     width: 100%;
@@ -88,7 +121,6 @@
 
 .commentHeadingContainer {
     background-color: white;
-    height: 100%
 }
 .commentHeading:hover {
     background-color: var(--bs-tertiary-bg);
@@ -100,16 +132,49 @@
     font-weight: 600;
 }
 
-.selectableCommentsContainer{
-    background-color: var(--bs-tertiary-bg);
+.editCommentButton:hover{
+    color:#225633;
 }
 
-.navBottomContainer{
+.selectableCommentsContainer{
+    display: flex;
+    height: 12rem;
+    flex-direction: column;
+    align-items: flex-start;
+    white-space: normal;
     background-color: var(--bs-tertiary-bg);
+    overflow-x: visible;
+    overflow-y: scroll;
+    scrollbar-color: #225633 transparent;
+    scrollbar-width: thin;
 }
-.navBottomContainer .row>*{
-    padding-right: 0;
-    padding-left: 0;
+
+.selectableCommentsContainer::-webkit-scrollbar-thumb {
+    background-color: #225633;
+    border: none; /* Remove the border */
+}
+
+.selectableCommentsContainer::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.selectableCommentsContainer::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
+
+.selectableComment {
+    display: flex;
+    text-align: left;
+    padding: 0.375rem 0.75rem;
+    cursor: pointer;
+    width: 100%;
+    overflow-wrap: break-word;
+}
+
+.selectableComment:hover {
+    background-color: #225633CC;
+    border: 1px solid #225633;
+    font-weight: 600;
 }
 
 /* Modal */

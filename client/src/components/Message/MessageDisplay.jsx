@@ -56,7 +56,12 @@ const MessageDisplay = ({ messages, messagesEndRef }) => {
                 function getLanguage(segment) {
                     const lines = segment.split('\n');
                     const language = lines[0];
-                    return language;
+                    if (language === 'jsx' || language === 'JavaScript' || language === 'js') {
+                      return 'javascript';
+                    }
+                    else{
+                      return language;
+                    }
                 }
                 
                 try{
@@ -67,7 +72,7 @@ const MessageDisplay = ({ messages, messagesEndRef }) => {
                     );
                 }catch(error)
                 {
-                    return <p key={index}>{segment}</p>;
+                    return <MarkdownComponent input={segment} key={index}/>;
                 }                
             }
         });

@@ -173,4 +173,35 @@ recordManagebacRoutes.route("/managebac/getAcademicYears").get(async function (r
     }
 });
 
+
+recordManagebacRoutes.route("/managebac/getRole/:email").get(async function (req, response) {
+    //get user ID from managebac using their email
+    var email = req.params.email;
+    var url = "https://api.managebac.com/v2/students";
+
+    var params = {
+        "archived": "false",
+        "per_page": 1,
+        "q": email,
+    };
+    
+    try {
+        const searchParams = new URLSearchParams(params);
+        const res = await fetch(`${url}?${searchParams}`, { headers });
+        const data = await res.json();
+        // Handle the response here
+        //console.log(data); // Example: Log the response data
+        if(data.students.length === 0){
+            response.send({"role": "Staff"});
+        }
+        else{
+            response.send({"role": data.students[0].role}); // return the role as JSON
+        }        
+    } catch (error) {
+        // Handle any errors here
+        console.error(error);
+        response.status(500).send("Internal Server Error");
+    }
+});
+
 module.exports = recordManagebacRoutes;

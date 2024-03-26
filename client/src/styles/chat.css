@@ -75,7 +75,8 @@
 
 .messageOutgoing{
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: column;
+    text-align: right;
     background-color: white;
     margin-bottom: 0px;
     padding: 20px;

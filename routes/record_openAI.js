@@ -1,5 +1,6 @@
 const express = require("express");
 const OpenAI = require("openai");
+const { OpenAIClient, AzureKeyCredential } = require("@azure/openai");
 require("dotenv").config();
 
 // recordRoutes is an instance of the express router.
@@ -11,6 +12,11 @@ const OPENAI_RESOURCE = process.env.OPENAI_RESOURCE;
 
 //const model = "GPT35_16K";//process.env.OPENAI_DEPLOYMENT;
 const apiVersion = process.env.OPENAI_API_VERSION;
+
+const AZURE_SEARCH_SERVICE_ADMIN_KEY = process.env.AZURE_SEARCH_SERVICE_ADMIN_KEY;
+const AZURE_SEARCH_SERVICE_ENDPOINT = process.env.AZURE_SEARCH_SERVICE_ENDPOINT;
+
+const deploymentId = process.env.OPENAI_DEPLOYMENT;
 
 
 /*
@@ -92,7 +98,6 @@ recordOPENAIRoutes.route("/openAI/post").post(async function (req, response) {
     } 
 });*/
 
-
 recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response) {
     //chatHistory contains system message
     let chatHistory = req.body.chatHistory;
@@ -154,5 +159,45 @@ recordOPENAIRoutes.route("/openAI/postChatNoStream").post(async function (req, r
     }
 });
 
+recordOPENAIRoutes.route("/openAI/postChatAzureSearch").post(async function (req, response) {
+    //chatHistory contains system message
+    let messages = req.body.chatHistory;
+    let currentModel = req.body.model;
+    let searchIndex = req.body.searchIndex;
+    
+    // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
+    const client = new OpenAIClient(`https://${OPENAI_RESOURCE}.openai.azure.com`, new AzureKeyCredential(OPENAI_KEY));
+    //console.log(messages);
+    try {
+        const events = await client.streamChatCompletions(currentModel, messages, { 
+            maxTokens: 1024,
+            azureExtensionOptions: {
+              extensions: [
+                {
+                    type: "AzureCognitiveSearch",
+                    endpoint: AZURE_SEARCH_SERVICE_ENDPOINT,
+                    key: AZURE_SEARCH_SERVICE_ADMIN_KEY,
+                    indexName: searchIndex,
+                },
+              ],
+            },
+          });
+          for await (const event of events) {
+            for (const choice of event.choices) {
+              const newText = choice.delta?.content;
+              if (!!newText) {
+                response.write(newText || '');
+                // To see streaming results as they arrive, uncomment line below
+                // console.log(newText);
+              }
+            }
+          }
+          response.end();
+        
+    } catch (error) {
+        console.error(error);
+        response.status(500).send('Error generating text');
+    }
+});
 
 module.exports = recordOPENAIRoutes;

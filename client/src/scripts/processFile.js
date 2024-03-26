@@ -1,6 +1,7 @@
 //import pdfjsLib from 'pdfjs-dist';
 //const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
 import * as pdfjsLib from 'pdfjs-dist/webpack';
+import { toast } from 'react-toastify';
 
 export function extractPDFText(files){
     const promises = [];
@@ -31,6 +32,7 @@ export function extractPDFText(files){
                     });
                 }).catch(function(error) {
                     reject(error);
+                    toast.error(error.toString());
                 });
             };
             reader.readAsArrayBuffer(files[i]);

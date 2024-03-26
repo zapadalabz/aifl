@@ -1,4 +1,5 @@
 const express = require("express");
+const jwt = require('jsonwebtoken');
 
 // recordRoutes is an instance of the express router.
 // We use it to define our routes.
@@ -51,7 +52,8 @@ recordRoutes.route("/users/get/:email").get(async function (req, response) {
       .findOne(myquery)
       .then((data) => {
         //console.log(data);
-        response.json(data);
+        const token = jwt.sign({ email: req.params.email, role: data.role || null }, process.env.JWT_SECRET, { expiresIn: '24h' });
+        response.json({...data, token: token});
       });
     } catch (error) {
       console.log(error);
@@ -67,6 +69,7 @@ recordRoutes.route("/users/upsert").post(async function (req, response) {
     let myquery = {email: req.body.userObject.email}; //users have an ID from Brightspace called Identifier
 
     delete req.body.userObject._id;
+    delete req.body.userObject.token;
     /* userObject Google Login
       firstName:
       lastName:
@@ -267,9 +270,15 @@ recordRoutes.route("/courses/get").post(async function (req, response) {
 recordRoutes.route("/commentbank/get/:email").get(async function (req, response) {
   let db_connect = dbo.getDb();
   let myquery = { email: req.params.email };
-
-  let commentObj = await db_connect.collection("CommentBank").find(myquery);
-  response.json(commentObj);
+  
+  db_connect
+      .collection("CommentBank") 
+      .find(myquery)
+      .toArray()
+      .then((data) => {
+        //console.log(data);
+        response.json(data);
+      });
 });
 
 recordRoutes.route("/commentbank/update").post(async function (req, response) {

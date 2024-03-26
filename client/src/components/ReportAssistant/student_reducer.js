@@ -1,5 +1,6 @@
 let initialStudentsState = []
 function studentsReducer(state = initialStudentsState, action) {
+  //console.log(state, action);
   switch (action.type) {
     case 'UPDATE_STUDENT':
       return state.map((student) =>
@@ -45,6 +46,19 @@ export default function rootReducer(state = {}, action) {
         ...state,
         selectedCourses: action.payload.selectedCourses,// Array of selected courses
       };
+    case "UPDATE_COMMENT_BANK":
+      const newCommentBank = state.commentBank.map((comment, index) =>
+        index === action.payload.index ? action.payload.updates : comment
+      );
+      return {
+        ...state,
+        commentBank: newCommentBank,// Array of comments [{title, desc, comments}, ...]
+      }
+    case "SET_SELECTED_COMMENT_HEADING":
+      return {
+        ...state,
+        selectedCommentHeading: action.payload.selectedCommentHeading//index of selected comment heading
+      }
     default:
       return {
         ...state,
