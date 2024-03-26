@@ -55,6 +55,14 @@ function App() {
   const [ chatHistory, setChatHistory] = useState([]);
   const [selectedModel, setSelectedModel] = useState("GPT40");
 
+  const [deviceType, setDeviceType] = useState(null);
+
+  useEffect(() => {
+    const userAgent = typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+    const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+    setDeviceType(mobile ? "Mobile" : "Desktop");
+  }, []);
+
  //Check if user has a persistent login in localStorage
  useEffect(() => {
   const persistentLogin = localStorage.getItem('userCredential');
@@ -108,6 +116,9 @@ function App() {
   }
 
       return(
+        deviceType === "Mobile" 
+        ? <h1>Mobile Version Coming Soon</h1>
+        :
           <div className="App">
             <ToastContainer/>
             {!user ?
@@ -161,7 +172,7 @@ function App() {
               </>              
             }                   
           </div>
-      );
+          );
 }
 
 export default App;
