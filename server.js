@@ -26,13 +26,13 @@ app.listen (port, async () => {
   });
 });
 
-app.get("/", (req, res) => {
+/*app.get("/", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
-  });
+  });*/
 
-app.get("/api/hello", (req, res) => {
-    res.send({ message: "Hello" });
-  });
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+});
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];

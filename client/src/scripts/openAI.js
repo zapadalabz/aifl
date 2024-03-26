@@ -147,7 +147,7 @@ export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHist
             msgHistory.push({role : chat.role, content: chat.content});
         } 
     }
-
+    console.log(token);
     try {
         fetch(`${PROXY}/openAI/postChatAzureSearch`, { 
             method: "POST",
