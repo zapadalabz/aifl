@@ -73,6 +73,8 @@ function App() {
           if(decodedToken && decodedToken.email) {
               getUserByEmail(decodedToken.email).then((res)=>{
                 //console.log(res);
+                setUser(res);
+                /*
                 if(res.role){
                   setUser(res);
                 }else{
@@ -86,6 +88,7 @@ function App() {
                     toast.error(err.toString());
                   });
                 }
+                */
               }).catch((err)=>{
                   toast.error(err.toString());
               });
@@ -117,7 +120,7 @@ function App() {
 
       return(
         deviceType === "Mobile" 
-        ? <h1>Mobile Version Coming Soon</h1>
+        ? <h1>Mobile Version is Not Coming Soon</h1>
         :
           <div className="App">
             <ToastContainer/>
@@ -125,7 +128,7 @@ function App() {
             <Signin setUser={setUser}/>
             :
               <>
-              {user.role === "Staff"?
+              {1===1?//user.role === "Staff"
               <Routes>
                 <Route exact path="/" element={
                 <>

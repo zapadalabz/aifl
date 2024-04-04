@@ -44,7 +44,7 @@ function authenticateToken(req, res, next) {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
       if (err) {
-          return res.sendStatus(403);
+          return res.status(403).send('Session expired. Please refresh the page.');
       }
 
       req.user = user;
@@ -64,9 +64,9 @@ function limitRate(req, res, next) {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
-      return res.sendStatus(403);
+      return res.sendStatus(403).send('Session expired. Please refresh the page.');
     }
-    let limit = 10;
+    let limit = 20;
     if(user.role && user.role === "Staff"){
       limit = 50;
     }

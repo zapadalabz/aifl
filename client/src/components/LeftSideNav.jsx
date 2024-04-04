@@ -3,6 +3,12 @@ import "../styles/sidenav.css"
 
 const LeftSideNav = ({setShowFav, handleLogOut, clearChat}) => {
 
+    /*
+    <div className="navItem" onClick={() => setShowFav(true)}>
+        Favourites
+    </div>
+    */
+
     return(
         <div className="sidenav left">
             <div className="sidebarContent">
@@ -11,9 +17,7 @@ const LeftSideNav = ({setShowFav, handleLogOut, clearChat}) => {
                 </div>
                 <hr></hr>
                 <div className="itemContainer">
-                    <div className="navItem" onClick={() => setShowFav(true)}>
-                        Favourites
-                    </div>
+                    
                     <div className="navItem" onClick={() => clearChat()}>
                         Clear Chat
                     </div>
