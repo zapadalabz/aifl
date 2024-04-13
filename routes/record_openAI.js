@@ -178,6 +178,7 @@ recordOPENAIRoutes.route("/openAI/postChatAzureSearch").post(async function (req
                     endpoint: AZURE_SEARCH_SERVICE_ENDPOINT,
                     key: AZURE_SEARCH_SERVICE_ADMIN_KEY,
                     indexName: searchIndex,
+                    roleInformation: messages[0].content,
                 },
               ],
             },
@@ -185,6 +186,7 @@ recordOPENAIRoutes.route("/openAI/postChatAzureSearch").post(async function (req
           for await (const event of events) {
             for (const choice of event.choices) {
               const newText = choice.delta?.content;
+              //console.log(choice);
               if (!!newText) {
                 response.write(newText || '');
                 // To see streaming results as they arrive, uncomment line below

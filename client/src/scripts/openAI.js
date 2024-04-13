@@ -135,7 +135,7 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model,
 export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHistory, model, token, searchIndex){
     const lengthChatHistory = chatHistory.length;
     
-    let systemMessage = `You are an experienced teacher helping fellow colleagues.
+    let systemMessage = `You are an experienced teacher.
     If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$`;
     let msgHistory = [{role : "system", content: systemMessage}];
 
@@ -147,7 +147,7 @@ export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHist
             msgHistory.push({role : chat.role, content: chat.content});
         } 
     }
-    console.log(token);
+    //console.log(token);
     try {
         fetch(`${PROXY}/openAI/postChatAzureSearch`, { 
             method: "POST",
