@@ -15,7 +15,7 @@ const initialState = {courses: {}, selectedCourses: [], commentBank: [{title:"",
 
 export default function ReportAssistant({user, setUser}) {
     const [state, dispatch] = useReducer(rootReducer, initialState);
-    const [courses, setCourses] = useState([]);
+    const [courses, setCourses] = useState([{"id": 12403892, "reporting_period": {'id':204994,'program_code':"Midterm Report Card"}, "code": "SPH3UH-1", "program": "diploma"}]);
     const [showModal, setShowModal] = useState(false);
     const [commentState, setCommentState] = useState(false);
     const reportMainRef = useRef(null);
@@ -24,10 +24,10 @@ export default function ReportAssistant({user, setUser}) {
     useEffect(() => {
         const getData = async () => {
             try {
-                const result = await getActiveClasses(user.managebacID)
-                setCourses(result);
+                //const result = await getActiveClasses(user.managebacID)
+                //setCourses(result);
                 //console.log(result);
-                const courseResult = await getCourses(user.email, result)
+                const courseResult = await getCourses(user.email, courses);
                 //setClassLists(courseResult);
                 dispatch({
                     type: 'INIT',

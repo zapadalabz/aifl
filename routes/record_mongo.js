@@ -51,9 +51,16 @@ recordRoutes.route("/users/get/:email").get(async function (req, response) {
       .collection("Users") 
       .findOne(myquery)
       .then((data) => {
-        //console.log(data);
-        const token = jwt.sign({ email: req.params.email, role: data.role || null }, process.env.JWT_SECRET, { expiresIn: '240h' });
+        console.log(data);
+        var role = null;
+        
+        if(data){
+          role = data.role || null;
+        }
+
+        const token = jwt.sign({ email: req.params.email, role: role }, process.env.JWT_SECRET, { expiresIn: '240h' });
         response.json({...data, token: token});
+       
       });
     } catch (error) {
       console.log(error);

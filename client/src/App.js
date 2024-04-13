@@ -9,6 +9,7 @@ import jwt_decode from "jwt-decode";
 import { googleLogout } from '@react-oauth/google';
 import { getUserByEmail, upsertUser } from "./scripts/mongo";
 import { getUserRole } from "./scripts/managebac";
+import { managebacLogin } from './scripts/playwright';
 
 import LeftSideNav from './components/LeftSideNav';
 import RightSideNav from './components/RightSideNav';
@@ -73,7 +74,11 @@ function App() {
           if(decodedToken && decodedToken.email) {
               getUserByEmail(decodedToken.email).then((res)=>{
                 //console.log(res);
-                setUser(res);
+                if(res.email){
+                  setUser(res);
+                }else{
+                  setUser(null)
+                }
                 /*
                 if(res.role){
                   setUser(res);

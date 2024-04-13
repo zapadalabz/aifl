@@ -15,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use(require("./routes/record_mongo"));
 app.use(require("./routes/record_managebac"));
+app.use(require("./routes/record_playwright"));
 
 
 const dbo = require("./db/conn");
@@ -59,17 +60,15 @@ function limitRate(req, res, next) {
   const token = authHeader && authHeader.split(' ')[1];
 
   if (token == null) {
-    return res.sendStatus(401);
+    return res.sendStatus(401).send("No token provided.");
   }
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       return res.sendStatus(403).send('Session expired. Please refresh the page.');
     }
-    let limit = 20;
-    if(user.role && user.role === "Staff"){
-      limit = 50;
-    }
+    let limit = 25;
+
     if (!requests[user.email]) {
       requests[user.email] = { count: 1, firstRequest: Date.now() };
     } else {

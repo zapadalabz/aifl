@@ -26,7 +26,8 @@ export default function Signin({setUser}){
                         console.log(tempUser.hd === "branksome.on.ca");
                         if(tempUser.hd === "branksome.on.ca")  {
                             getUserByEmail(tempUser.email).then( (resp) => {
-                                if(resp){
+                                console.log(resp);
+                                if(resp.firstName){
                                     setUser(resp);                        
                                     localStorage.setItem('userCredential',credentialResponse.credential);
                                 }
@@ -41,6 +42,7 @@ export default function Signin({setUser}){
                                     };
                                     upsertUser(newUser).then(()=>{
                                             setUser(newUser);
+                                            localStorage.setItem('userCredential',credentialResponse.credential);
                                         });                                
                                 }
                             });
