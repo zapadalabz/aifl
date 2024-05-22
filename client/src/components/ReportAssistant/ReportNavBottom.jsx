@@ -12,7 +12,7 @@ export default function ReportNavBottom({user, handleEditClick, handleCommentCli
   const {state, dispatch} = useContext(StudentContext);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showOpenModal, setShowOpenModal] = useState(false);
-  const [userCommentBank, setUserCommentBank] = useState([]);
+  const [userCommentBank, setUserCommentBank] = useState([{filename:"", comments:[{title:"", desc:"", comments:""}]}]);
   //const [commentState, setCommentState] = useState(false);
 
   const handleHeadingClick = (index) => {
@@ -26,7 +26,7 @@ export default function ReportNavBottom({user, handleEditClick, handleCommentCli
 
   const handleOpenClick = () => {
     getComments(user.email).then((response) => {
-      console.log(user.email);
+      console.log(response);
       setUserCommentBank(response);
       setShowOpenModal(!showOpenModal);
     }).catch((error) => {console.log(error)});
@@ -37,8 +37,17 @@ export default function ReportNavBottom({user, handleEditClick, handleCommentCli
     setShowOpenModal(false);
   }
 
-  const handleOpen = (index) => {
-    console.log(index);
+  const handleOpen = (commentBankIndex) => {
+    userCommentBank[commentBankIndex].comments.forEach((comment, index) => {
+      dispatch({
+        type: 'UPDATE_COMMENT_BANK',
+        payload: {
+            index: index,
+            updates: {title: comment.title, desc: comment.desc, comments: comment.comments},
+        }
+      });
+    });
+    handleOpenClose();
   }
 
   const handleSaveClick = () => {

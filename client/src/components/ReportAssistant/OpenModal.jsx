@@ -7,8 +7,8 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 
 export default function OpenModal({showOpenModal, handleOpen, handleOpenClose, userCommentBank}){
-    const [filename, setFilename] = useState("");
-    console.log(userCommentBank);
+    const [fileIndex, setFileIndex] = useState(0);
+    //console.log(userCommentBank);
     return(
         <Modal show={showOpenModal} handleClose={handleOpenClose}>
             <Container>
@@ -17,19 +17,25 @@ export default function OpenModal({showOpenModal, handleOpen, handleOpenClose, u
                         <InputGroup className="mb-1">
                             <InputGroup.Text id="filename">Filename</InputGroup.Text>
                             <Form.Control
-                                type="text"
+                                as="select"
                                 id="filename-input"
                                 aria-describedby="filename"
                                 placeholder="Enter filename"
                                 maxLength={28}
-                                value={filename}
-                                onChange={(e) => setFilename(e.target.value)}
-                            />
+                                value={userCommentBank[fileIndex].filename}
+                                onChange={(e) => setFileIndex(e.target.value)}
+                            >
+                                {userCommentBank.map((item, index) => (
+                                    <option key={item._id} value={index}>{item.filename}</option>
+                                ))}
+                            </Form.Control>
+                            
+
                         </InputGroup>
                         
                     </Col>
                     <Col xs={4}>
-                        <Button variant="primary" onClick={()=>handleOpen(filename)}>Save</Button>
+                        <Button variant="primary" onClick={()=>handleOpen(fileIndex)}>Open</Button>
                     </Col>
                     
                 </Row>

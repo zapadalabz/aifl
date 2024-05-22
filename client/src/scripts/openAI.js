@@ -89,15 +89,25 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
 export async function postOpenAIChatResponse(chatHistory, setChatHistory, model, token){
     const lengthChatHistory = chatHistory.length;
     
-    let systemMessage = `You are an experienced teacher helping fellow colleagues.
+    let systemMessage = `You are an experienced teacher that responds in Markdown.
     If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$`;
     let msgHistory = [{"role" : "system", "content" : systemMessage}]; //Include the attachments into the history
 
     for(let i = 0; i < lengthChatHistory-1; i++){
         let chat = chatHistory[i];
         if(chat.role === "user"){
-            msgHistory.push({"role" : chat.role, "content" : chat.content + chat.attachments.map((text, index) => `\n\ndocument_${index}: \`\`\`${text}\`\`\``).join('')});
-        }else{
+            if(chat.img === ""){
+                msgHistory.push({"role" : chat.role, "content" : chat.content + chat.attachments.map((text, index) => `\n\ndocument_${index}: \`\`\`${text}\`\`\``).join('')});
+            }else{
+                const chatContent = [
+                    {"type": "text", "text": chat.content + chat.attachments.map((text, index) => `\n\ndocument_${index}: \`\`\`${text}\`\`\``).join('')},
+                    {"type": "image_url", "image_url": {
+                        "url": `${chat.img}`}
+                    }
+                ];
+                msgHistory.push({"role" : chat.role, "content" : chatContent});
+            }
+            }else{
             msgHistory.push({"role" : chat.role, "content" : chat.content});
         } 
     }

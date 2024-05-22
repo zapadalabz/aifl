@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "build-prod": "cd client && npm install && npm run build && cd .. && npm install"
+    "build-prod": "cd client && npm install && npm run build && cd .. && npm install && npx playwright install"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.2.0",
     "openai": "^4.17.0",
-    "playwright": "^1.43.0"
+    "playwright": "^1.43.0",
+    "turndown": "^7.1.3"
   }
 }

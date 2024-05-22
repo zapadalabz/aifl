@@ -29,53 +29,43 @@ const MessageDisplay = ({ messages, messagesEndRef }) => {
     />
   );
 
-  const renderMessageContent = (m) => {
-    switch (m.type) {
-      case 'text':
-        return <p>{m.content}</p>;
-      case 'image':
-        return <img src={m.content} alt="Message Attachment" className="messageImage" />;
-      case 'link':
-        return <a href={m.content} target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faLink} /> Open Link</a>;
-      case 'code':
-        // Using react-syntax-highlighter for code snippet
-        return (
-          <SyntaxHighlighter language="javascript" style={atomOneDarkReasonable}>
-            {m.content}
-          </SyntaxHighlighter>
-        );
-      default:
-        // Split the content into segments
-        const segments = m.content.split('```');
-        return segments.map((segment, index) => {
-            // Even indices are regular text, odd indices are code snippets
-            if (index % 2 === 0) {
-                return <MarkdownComponent input={segment} key={index}/>;
-            } 
-            else {
-                function getLanguage(segment) {
-                    const lines = segment.split('\n');
-                    const language = lines[0];
-                    if (language === 'jsx' || language === 'JavaScript' || language === 'js') {
-                      return 'javascript';
-                    }
-                    else{
-                      return language;
-                    }
-                }
-                
-                try{
-                    return (
-                        <SyntaxHighlighter language= {getLanguage(segment)} style={atomOneDarkReasonable} key={index}>
-                            {segment}
-                        </SyntaxHighlighter>
-                    );
-                }catch(error)
-                {
-                    return <MarkdownComponent input={segment} key={index}/>;
-                }                
-            }
-        });
+const renderMessageContent = (m) => {
+  switch (m.type) {
+    case 'text':
+      return <p>{m.content}</p>;
+    case 'image':
+      return <img src={m.content} alt="Message Attachment" className="messageImage" />;
+    case 'link':
+      return (
+        <a href={m.content} target="_blank" rel="noopener noreferrer">
+          Open Link
+        </a>
+      );
+    case 'code':
+      return (
+        <SyntaxHighlighter language="javascript" style={atomOneDarkReasonable}>
+          {m.content}
+        </SyntaxHighlighter>
+      );
+    default:
+      // Handle mixed Markdown and code-content efficiently
+      const contentSegments = m.content.split(/(```.*\n[\s\S]*?\n```)/g);
+
+      return contentSegments.map((segment, index) => {
+        if (segment.startsWith('```') && segment.endsWith('```')) {
+          const lines = segment.split('\n');
+          let language = lines[0].replace(/```/g, '').trim();
+          const codeContent = lines.slice(1, -1).join('\n'); // Get rid of the first and last "```"
+          if (language === 'jsx' || language === 'Javascript') { language = 'javascript'; }
+          return (
+            <SyntaxHighlighter language={language || 'text'} style={atomOneDarkReasonable} key={index}>
+              {codeContent}
+            </SyntaxHighlighter>
+          );
+        } else {
+          return <MarkdownComponent input={segment} key={index} />;
+        }
+      });
     }
   };
 
@@ -96,6 +86,7 @@ const MessageDisplay = ({ messages, messagesEndRef }) => {
             return (
               <div key={i} className="messageOutgoing">
                 {renderMessageContent(m)}
+                {m.img && <img src={m.img} alt="User Attachment" className="messageImage" style={{ maxHeight: '250px', maxWidth:'250px', cursor: 'default' }}/>}
                 {m.attachments.length > 0 && (
                   <>
                     <br /><br />

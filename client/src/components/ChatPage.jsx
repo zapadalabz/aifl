@@ -8,7 +8,9 @@ import Overlay from 'react-bootstrap/Overlay';
 import Stack from 'react-bootstrap/Stack';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
+import { faImage } from "@fortawesome/free-regular-svg-icons/faImage";
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function ChatPage({chatHistory, setChatHistory, selectedModel, token}) {
   const params = useParams();
@@ -16,12 +18,14 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
 
   const inputRef = useRef();
   const fileInput = useRef();
+  const imgInput = useRef();
 
   const openAIEnabled = useRef(false);
   const [msgInputValue, setMsgInputValue] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
 
   const [attachText, setAttachText] = useState([]);
+  const [imageBase64, setImageBase64] = useState('');
   const [attachState, setAttachState] = useState({
     count:0,
     icon: "paperClip"
@@ -32,6 +36,29 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
       setAttachState(prevState => ({ ...prevState, count: attachText.length, icon: "paperClip"}));
   },[attachText]);
 
+  const onPaste = (event) => {
+    const clipboardData = event.clipboardData;
+    const items = clipboardData.items;
+
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        const file = item.getAsFile();
+        const reader = new FileReader();
+
+        reader.onload = (event) => {
+          setImageBase64(event.target.result);
+          //console.log(event.target.result);
+        };
+        reader.readAsDataURL(file);
+      } else if (item.type === 'text/plain') {
+        item.getAsString((text) => {
+          document.execCommand('insertText', false, text);
+        });
+      }
+    }
+
+    event.preventDefault(); // Prevent the default paste behavior
+  };
 
   const messagesEndRef = useRef();
   
@@ -59,7 +86,8 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
         {
           content: message,
           role: 'user',
-          attachments: attachText
+          attachments: attachText,
+          img: imageBase64
         },
         {
           content: '',
@@ -67,7 +95,8 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
         }
       ]);
       setMsgInputValue("");
-      setAttachText([]);      
+      setAttachText([]);  
+      setImageBase64('');    
     }
     inputRef.current.focus();
   };
@@ -88,12 +117,36 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
         setAttachState(prevState => ({ ...prevState, icon: "Loading"}));
         event.target.value = '';
     }
-  
+  const handleImgClick = () => {
+    setImageBase64('');
+  }
+  const handleImgIconClick = () => {
+    imgInput.current.click();
+  }
+
+  const handleImageChange = event => {
+    const file = event.target.files[0];
+    
+    // Check if the file exists and is less than 4MB
+    if (file && file.size < 4 * 1024 * 1024) { // 4MB in bytes
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setImageBase64(event.target.result);
+        //console.log(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      toast.error("File is too large or not available. Max 4Mb allowed.");
+    }
+    
+    event.target.value = '';
+  }
+
   return (
     <div className="mainChat">
             <MessageDisplay messages={chatHistory} messagesEndRef={messagesEndRef}/>
             <div as={MessageInput} className="messageInputDIV">
-                <MessageInput ref={inputRef} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={searchIndex===""?true:false} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachState={attachState}/>
+                <MessageInput ref={inputRef} onPaste={onPaste} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={searchIndex===""?true:false} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachState={attachState}/>
                 <Overlay target={inputRef.current!==undefined&&searchIndex===""?inputRef.current.attachButton.buttonA.button:inputRef} show={showOverlay} placement="top" rootClose onHide={() => setShowOverlay(false)}>
                   {({
                     placement: _placement,
@@ -116,14 +169,42 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
                     >
                       <Stack direction="horizontal" gap={3}>
                           <FontAwesomeIcon className="fa-2x attachIcon" icon={faFilePdf} onClick={handlePDFClick}/>
+                          <FontAwesomeIcon className="fa-2x attachIcon" icon={faImage} onClick={handleImgIconClick}/>
                       </Stack>
                     </div>
                   )}
-                </Overlay>                       
+                </Overlay>
+                <Overlay target={inputRef.current!==undefined&&searchIndex===""?inputRef.current.attachButton.buttonA.button:inputRef} show={imageBase64 !== ''} placement="top" rootClose onHide={() => setShowOverlay(false)}>
+                  {({
+                    placement: _placement,
+                    arrowProps: _arrowProps,
+                    show: _show,
+                    popper: _popper,
+                    hasDoneInitialMeasure: _hasDoneInitialMeasure,
+                    ...props
+                  }) => (
+                    <div
+                      {...props}
+                      style={{
+                        position: 'absolute',
+                        backgroundColor: 'rgba(0, 0, 0, 0.0)',
+                        padding: '2px 5px',
+                        color: 'white',
+                        borderRadius: 3,
+                        ...props.style,
+                      }}
+                    >
+                      <img src={imageBase64} alt="Pasted" style={{maxWidth: '200px', maxHeight: '200px'}} onClick={() => handleImgClick()}/>
+                    </div>
+                  )}
+                </Overlay>
             </div>
             
             <div style={{display: 'none'}}>
                 <input type="file" accept=".pdf" ref={fileInput} onChange={(e) => handleFileChange(e)} multiple></input>
+            </div>
+            <div style={{display: 'none'}}>
+                <input type="file" accept="image/*" ref={imgInput} onChange={(e) => handleImageChange(e)}></input>
             </div>
     </div>
   )

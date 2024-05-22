@@ -51,9 +51,9 @@ recordRoutes.route("/users/get/:email").get(async function (req, response) {
       .collection("Users") 
       .findOne(myquery)
       .then((data) => {
-        console.log(data);
+        //console.log(data);
         var role = null;
-        
+
         if(data){
           role = data.role || null;
         }

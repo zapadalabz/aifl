@@ -2,9 +2,13 @@ const express = require('express');
 const path = require('path');
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser');
 
 const app = express();
 const cors = require('cors');
+
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 // Serve the React static files after build
 app.use(express.static("./client/build"));

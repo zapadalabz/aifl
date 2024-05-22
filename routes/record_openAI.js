@@ -10,6 +10,9 @@ const recordOPENAIRoutes = express.Router();
 const OPENAI_KEY = process.env.OPENAI_KEY;
 const OPENAI_RESOURCE = process.env.OPENAI_RESOURCE;
 
+const OPENAI_KEY2 = process.env.OPENAI_KEY2;
+const OPENAI_RESOURCE2 = process.env.OPENAI_RESOURCE2;
+
 //const model = "GPT35_16K";//process.env.OPENAI_DEPLOYMENT;
 const apiVersion = process.env.OPENAI_API_VERSION;
 
@@ -102,14 +105,17 @@ recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response)
     //chatHistory contains system message
     let chatHistory = req.body.chatHistory;
     let currentModel = req.body.model;
-    
+    let resource = OPENAI_RESOURCE;
+    let api_key = OPENAI_KEY;
+
     // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
     const openai = new OpenAI({
-        apiKey: OPENAI_KEY,
-        baseURL: `https://${OPENAI_RESOURCE}.openai.azure.com/openai/deployments/${currentModel}`,
+        apiKey: api_key,
+        baseURL: `https://${resource}.openai.azure.com/openai/deployments/${currentModel}`,
         defaultQuery: { 'api-version': apiVersion },
-        defaultHeaders: { 'api-key': OPENAI_KEY },
+        defaultHeaders: { 'api-key': api_key },
     });
+    
 
     try {
         const stream = await openai.chat.completions.create({
@@ -195,6 +201,52 @@ recordOPENAIRoutes.route("/openAI/postChatAzureSearch").post(async function (req
             }
           }
           response.end();
+        
+    } catch (error) {
+        console.error(error);
+        response.status(500).send('Error generating text');
+    }
+});
+
+recordOPENAIRoutes.route("/openAI/postChatAzureSearchNoStream").post(async function (req, response) {
+    //chatHistory contains system message
+    let messages = req.body.chatHistory;
+    let currentModel = req.body.model;
+    let searchIndex = req.body.searchIndex;
+    
+    // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
+    const client = new OpenAIClient(`https://${OPENAI_RESOURCE}.openai.azure.com`, new AzureKeyCredential(OPENAI_KEY));
+    //console.log(messages);
+    try {
+        const events = await client.streamChatCompletions(currentModel, messages, { 
+            maxTokens: 4000,
+            azureExtensionOptions: {
+              extensions: [
+                {
+                    type: "AzureCognitiveSearch",
+                    endpoint: AZURE_SEARCH_SERVICE_ENDPOINT,
+                    key: AZURE_SEARCH_SERVICE_ADMIN_KEY,
+                    indexName: searchIndex,
+                    roleInformation: messages[0].content,
+                    inScope: false,
+                },
+              ],
+            },
+          });
+          let finalText = "";
+          for await (const event of events) {
+            for (const choice of event.choices) {
+              const newText = choice.delta?.content;
+              //console.log(choice);
+              if (!!newText) {
+                finalText += newText;
+                //response.write(newText || '');
+                // To see streaming results as they arrive, uncomment line below
+                // console.log(newText);
+              }
+            }
+          }
+          response.send({"message": finalText});
         
     } catch (error) {
         console.error(error);

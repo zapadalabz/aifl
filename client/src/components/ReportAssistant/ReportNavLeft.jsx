@@ -2,20 +2,30 @@ import React, { useContext } from "react";
 import Select from 'react-select';
 import { Container, Row } from 'react-bootstrap';
 import StudentContext from "./StudentContext";
+import ExportToExcel from "./ExportToExcel";
+import ImportFromExcel from "./ImportFromExcel";
+import { updateStudentList } from "../../scripts/playwright";
 
 
-export default function ReportNavLeft({courses}) {
+export default function ReportNavLeft({courses, user}) {
     const {state, dispatch} = useContext(StudentContext);
+
     let options = [];
+    const handleImport = (response) => {
+        if(response){
+            updateStudentList(user.email, state.courseList);
+        }
+    }
     for (const course of courses) {
         options.push({value: course.id, label: course.code});
     }
 
     const handleCourseChange = (selected) => { // Function to handle change in selections
+        console.log(selected);
         dispatch({
             type: 'UPDATE_SELECTED_COURSES',
             payload: {
-                selectedCourses: selected.map(option => option.value)
+                selectedCourses: [selected.value],
             }
           });
     }
@@ -25,21 +35,20 @@ export default function ReportNavLeft({courses}) {
             <Row>
                 <Select className="course-select"
                     isRtl={true}
-                    closeMenuOnSelect={false}
+                    closeMenuOnSelect={true}
                     defaultValue={null}
-                    isMulti
                     name="Courses"
-                    placeholder="Select Courses"
+                    placeholder="Select Course"
                     noOptionsMessage={() => "No courses found"}
                     options={options}
                     onChange={handleCourseChange}
                 />
             </Row>
             <Row className="mt-2 mx-0">
-                Export Grade Template
+                <ExportToExcel data={state.courseList} fileName={`Template-${state.selectedCourses}`}/>
             </Row>
             <Row className="mt-2 mx-0">
-                Import Grade Template
+                <ImportFromExcel onDataProcessed={handleImport}/>
             </Row>
         </Container>
     );

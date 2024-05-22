@@ -15,15 +15,6 @@ const RightSideNav = ({selectedModel, setSelectedModel}) => {
                 <hr></hr>
                 <div className="itemContainer">
                     <form>
-                        <input
-                            type="radio"
-                            id="model1"
-                            name="modelList"
-                            value="GPT40"
-                            checked={selectedModel === 'GPT40'}
-                            onChange={handleModelChange}
-                        />
-                        <label htmlFor="model1" className="modelLabel">GPT 4.0</label>
                         <br />
                         <input
                             type="radio"
@@ -39,11 +30,11 @@ const RightSideNav = ({selectedModel, setSelectedModel}) => {
                             type="radio"
                             id="model3"
                             name="modelList"
-                            value="GPT432K"
-                            checked={selectedModel === 'GPT432K'}
+                            value="GPT4o"
+                            checked={selectedModel === 'GPT4o'}
                             onChange={handleModelChange}
                         />
-                        <label htmlFor="model3" className="modelLabel">GPT 4.0 32K</label>
+                        <label htmlFor="model3" className="modelLabel">GPT4o</label>
                     </form>         
                 </div>
             </div>

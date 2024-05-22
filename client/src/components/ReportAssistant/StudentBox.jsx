@@ -9,7 +9,7 @@ import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
 import { faLockOpen } from "@fortawesome/free-solid-svg-icons/faLockOpen";
 import StudentContext from "./StudentContext";
 
-export default function StudentBox({student, course_id}) {
+export default function StudentBox({student, student_index, handleUpdateStudent}) {
     const {state, dispatch} = useContext(StudentContext);
     const grade_options = ['','7+', '7', '7-', '6+', '6', '6-', '5+', '5', '5-', '4+', '4', '4-', '3+', '3', '3-', '2+', '2', '2-', '1+', '1', '1-', 'N'].map((option) => { return <option key={option} value={option}>{option}</option>});
     const myp_options = ['','8', '7', '6', '5', '4', '3', '2', '1', 'N'].map((option) => { return <option key={option} value={option}>{option}</option>});
@@ -21,40 +21,36 @@ export default function StudentBox({student, course_id}) {
         );
     });
 
-    const toggleLock = () => {
-        dispatch({
-            type: 'UPDATE_STUDENT',//TOGGLE_LOCK
-            payload: {
-              student_id: student.id,
-              course_id: course_id,
-              updates: {locked: !student.locked},
-            }
-          });
-    };
-
     const updateComment = (e) => {
         dispatch({
             type: 'UPDATE_STUDENT',//UPDATE COMMENT
             payload: {
-              student_id: student.id,
-              course_id: course_id,
+              student_index: student_index,
               updates: {comment: e.target.value},
             }
           });
     }
 
+    const handleSelectChange = (e, fieldName) => {
+        dispatch({
+            type: 'UPDATE_STUDENT', // You might need to handle different payload structure or action types for other fields.
+            payload: {
+                student_index: student_index,
+                updates: {[fieldName]: e.target.value},
+            }
+        });
+    }
 
     return (
         <Container fluid className="studentBoxContainer">
             <Row className="studentBoxName" >
-                {student.first_name} {student.last_name} {student.nickname?"("+student.nickname+")":""}
-                <FontAwesomeIcon className="fa-2x float-end" icon={student.locked?faLock:faLockOpen} onClick={toggleLock}/>                
+                {student.name}          
             </Row>
             <Row className="d-flex my-2" >
                 <Col xs={3} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="overall-grade">Overall</InputGroup.Text>
-                        <Form.Select aria-label="Overall" aria-describedby="overall-grade" defaultValue={student.overall||""}>
+                        <Form.Select aria-label="Overall" aria-describedby="overall-grade" defaultValue={student["Overall Mark"].split(" ")[0]||""} onChange={(e) => {handleSelectChange(e, "Overall Mark")}}>
                             {grade_options}
                         </Form.Select> 
                     </InputGroup>
@@ -62,7 +58,7 @@ export default function StudentBox({student, course_id}) {
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL1">O</InputGroup.Text>
-                        <Form.Select aria-label="Organization" aria-describedby="ATL1" defaultValue={student.ATL[0]||"E"}>
+                        <Form.Select aria-label="Organization" aria-describedby="ATL1" defaultValue={student["Organization"]||"E"} onChange={(e) => {handleSelectChange(e, "Organization")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -70,7 +66,7 @@ export default function StudentBox({student, course_id}) {
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL2">SR</InputGroup.Text>
-                        <Form.Select aria-label="Self-Regulation" aria-describedby="ATL2"  defaultValue={student.ATL[1]||'E'}>
+                        <Form.Select aria-label="Self-Regulation" aria-describedby="ATL2"  defaultValue={student["Self Regulation"]||'E'} onChange={(e) => {handleSelectChange(e, "Self Regulation")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -78,7 +74,7 @@ export default function StudentBox({student, course_id}) {
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL3">C</InputGroup.Text>
-                        <Form.Select aria-label="Collaboration" aria-describedby="ATL3"  defaultValue={student.ATL[2]||'E'}>
+                        <Form.Select aria-label="Collaboration" aria-describedby="ATL3"  defaultValue={student["Collaboration"]||'E'} onChange={(e) => {handleSelectChange(e, "Collaboration")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -86,7 +82,7 @@ export default function StudentBox({student, course_id}) {
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL4">L</InputGroup.Text>
-                        <Form.Select aria-label="Leadership" aria-describedby="ATL4"  defaultValue={student.ATL[3]||'E'}>
+                        <Form.Select aria-label="Leadership" aria-describedby="ATL4"  defaultValue={student["Leadership"]||'E'} onChange={(e) => {handleSelectChange(e, "Leadership")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -136,7 +132,7 @@ export default function StudentBox({student, course_id}) {
                     placeholder="Enter comment here"
                     style={{ height: '150px' }}
                     value = {student.comment}
-                    onChange={(e) => {updateComment(e)}}
+                    onChange={(e) => {handleSelectChange(e, "comment")}}
                     />
                 </FloatingLabel>
             </Row>
