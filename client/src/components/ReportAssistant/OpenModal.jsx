@@ -22,7 +22,7 @@ export default function OpenModal({showOpenModal, handleOpen, handleOpenClose, u
                                 aria-describedby="filename"
                                 placeholder="Enter filename"
                                 maxLength={28}
-                                value={userCommentBank[fileIndex].filename}
+                                value={fileIndex}
                                 onChange={(e) => setFileIndex(e.target.value)}
                             >
                                 {userCommentBank.map((item, index) => (

@@ -41,6 +41,22 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
         });
     }
 
+    const processOverallMark = (mark) => {
+        //console.log("Initial Mark: ", mark);
+        
+        if(mark[0] === "N"){
+            //console.log("Returning 'N'");
+            return "N";
+        } else if(mark.includes(" ")){
+            const splitMark = mark.split(" ")[0];
+            //console.log("Split Mark: ", splitMark);
+            return splitMark;
+        } else {
+            //console.log("Returning Mark or Empty: ", mark || "");
+            return mark || "";
+        }
+    }
+
     return (
         <Container fluid className="studentBoxContainer">
             <Row className="studentBoxName" >
@@ -50,7 +66,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={3} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="overall-grade">Overall</InputGroup.Text>
-                        <Form.Select aria-label="Overall" aria-describedby="overall-grade" defaultValue={student["Overall Mark"].split(" ")[0]||""} onChange={(e) => {handleSelectChange(e, "Overall Mark")}}>
+                        <Form.Select aria-label="Overall" aria-describedby="overall-grade" value={processOverallMark(student["Overall Mark"])} onChange={(e) => {handleSelectChange(e, "Overall Mark")}}>
                             {grade_options}
                         </Form.Select> 
                     </InputGroup>
@@ -58,7 +74,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL1">O</InputGroup.Text>
-                        <Form.Select aria-label="Organization" aria-describedby="ATL1" defaultValue={student["Organization"]||"E"} onChange={(e) => {handleSelectChange(e, "Organization")}}>
+                        <Form.Select aria-label="Organization" aria-describedby="ATL1" value={student["Organization"]||"E"} onChange={(e) => {handleSelectChange(e, "Organization")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -66,7 +82,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL2">SR</InputGroup.Text>
-                        <Form.Select aria-label="Self-Regulation" aria-describedby="ATL2"  defaultValue={student["Self Regulation"]||'E'} onChange={(e) => {handleSelectChange(e, "Self Regulation")}}>
+                        <Form.Select aria-label="Self-Regulation" aria-describedby="ATL2"  value={student["Self Regulation"]||'E'} onChange={(e) => {handleSelectChange(e, "Self Regulation")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -74,7 +90,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL3">C</InputGroup.Text>
-                        <Form.Select aria-label="Collaboration" aria-describedby="ATL3"  defaultValue={student["Collaboration"]||'E'} onChange={(e) => {handleSelectChange(e, "Collaboration")}}>
+                        <Form.Select aria-label="Collaboration" aria-describedby="ATL3"  value={student["Collaboration"]||'E'} onChange={(e) => {handleSelectChange(e, "Collaboration")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -82,7 +98,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="ATL4">L</InputGroup.Text>
-                        <Form.Select aria-label="Leadership" aria-describedby="ATL4"  defaultValue={student["Leadership"]||'E'} onChange={(e) => {handleSelectChange(e, "Leadership")}}>
+                        <Form.Select aria-label="Leadership" aria-describedby="ATL4"  value={student["Leadership"]||'E'} onChange={(e) => {handleSelectChange(e, "Leadership")}}>
                             {atl_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -94,7 +110,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="MYP1">A</InputGroup.Text>
-                        <Form.Select aria-label="A" aria-describedby="MYP1" defaultValue={student.MYP[0]||""}>
+                        <Form.Select aria-label="A" aria-describedby="MYP1" value={student.MYP[0]||""}>
                             {myp_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -102,7 +118,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="MYP2">B</InputGroup.Text>
-                        <Form.Select aria-label="B" aria-describedby="MYP2" defaultValue={student.MYP[1]||""}>
+                        <Form.Select aria-label="B" aria-describedby="MYP2" value={student.MYP[1]||""}>
                             {myp_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -110,7 +126,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="MYP3">C</InputGroup.Text>
-                        <Form.Select aria-label="C" aria-describedby="MYP3" defaultValue={student.MYP[2]||""}>
+                        <Form.Select aria-label="C" aria-describedby="MYP3" value={student.MYP[2]||""}>
                             {myp_options}
                         </Form.Select> 
                     </InputGroup> 
@@ -118,7 +134,7 @@ export default function StudentBox({student, student_index, handleUpdateStudent}
                 <Col xs={2} >
                     <InputGroup className="mb-1">
                         <InputGroup.Text id="MYP4">D</InputGroup.Text>
-                        <Form.Select aria-label="D" aria-describedby="MYP4" defaultValue={student.MYP[3]||""}>
+                        <Form.Select aria-label="D" aria-describedby="MYP4" value={student.MYP[3]||""}>
                             {myp_options}
                         </Form.Select> 
                     </InputGroup> 

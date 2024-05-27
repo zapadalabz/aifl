@@ -29,43 +29,41 @@ const MessageDisplay = ({ messages, messagesEndRef }) => {
     />
   );
 
-const renderMessageContent = (m) => {
-  switch (m.type) {
-    case 'text':
-      return <p>{m.content}</p>;
-    case 'image':
-      return <img src={m.content} alt="Message Attachment" className="messageImage" />;
-    case 'link':
-      return (
-        <a href={m.content} target="_blank" rel="noopener noreferrer">
-          Open Link
-        </a>
-      );
-    case 'code':
-      return (
-        <SyntaxHighlighter language="javascript" style={atomOneDarkReasonable}>
-          {m.content}
-        </SyntaxHighlighter>
-      );
-    default:
-      // Handle mixed Markdown and code-content efficiently
-      const contentSegments = m.content.split(/(```.*\n[\s\S]*?\n```)/g);
+const preprocessLaTeX = (content) => {
+  // Replace block-level LaTeX delimiters \[ \] with $$ $$
 
-      return contentSegments.map((segment, index) => {
-        if (segment.startsWith('```') && segment.endsWith('```')) {
-          const lines = segment.split('\n');
-          let language = lines[0].replace(/```/g, '').trim();
-          const codeContent = lines.slice(1, -1).join('\n'); // Get rid of the first and last "```"
-          if (language === 'jsx' || language === 'Javascript') { language = 'javascript'; }
-          return (
-            <SyntaxHighlighter language={language || 'text'} style={atomOneDarkReasonable} key={index}>
-              {codeContent}
-            </SyntaxHighlighter>
-          );
-        } else {
-          return <MarkdownComponent input={segment} key={index} />;
-        }
-      });
+  const blockProcessedContent = content.replace(
+    /\\\[(.*?)\\\]/gs,
+    (_, equation) => `$$${equation}$$`,
+  );
+  // Replace inline LaTeX delimiters \( \) with $ $
+  const inlineProcessedContent = blockProcessedContent.replace(
+    /\\\((.*?)\\\)/gs,
+    (_, equation) => `$${equation}$`,
+  );
+  return inlineProcessedContent;
+};
+
+  const renderMessageContent = (m) => {
+    switch (m.type) {      
+      default:
+        // Handle mixed Markdown and code-content efficiently
+        const contentSegments = m.content.split(/(```.*\n[\s\S]*?\n```)/g);
+        return contentSegments.map((segment, index) => {
+          if (segment.startsWith('```') && segment.endsWith('```')) {
+            const lines = segment.split('\n');
+            let language = lines[0].replace(/```/g, '').trim();
+            const codeContent = lines.slice(1, -1).join('\n'); // Get rid of the first and last "```"
+            if (language === 'jsx' || language === 'Javascript') { language = 'javascript'; }
+            return (
+              <SyntaxHighlighter language={language || 'text'} style={atomOneDarkReasonable} key={index}>
+                {codeContent}
+              </SyntaxHighlighter>
+            );
+          } else {
+            return <MarkdownComponent input={preprocessLaTeX(segment)} key={index} />;
+          }
+        });
     }
   };
 

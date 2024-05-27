@@ -34,7 +34,7 @@ const ExportToExcel = ({ data, fileName }) => {
   };
 
   return (
-    <button onClick={exportToCSV}>Export to Excel</button>
+    <button className="import_export_button" onClick={exportToCSV}>Export to Excel</button>
   );
 };
 

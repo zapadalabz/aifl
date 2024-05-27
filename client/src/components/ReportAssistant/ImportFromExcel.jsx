@@ -44,18 +44,18 @@ const ImportFromExcel = ({ onDataProcessed }) => {
 
             // Convert worksheet to JSON
             const data = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
             // Pass the data up to the parent component
-            if(haveSameKeys(data, state.courseList)){
-                for(let i = 0; i < data.length; i++){
+            if (haveSameKeys(data, state.courseList)) {
+                for (let i = 0; i < data.length; i++) {
+                    const updatedData = { ...data[i] };
+                    updatedData['Overall Mark'] = String(updatedData['Overall Mark']);
                     dispatch({
                         type: 'UPDATE_STUDENT',
                         payload: {
-                          student_index: i,
-                          updates: data[i],
+                            student_index: i,
+                            updates: updatedData,
                         }
-                      });
-
+                    });
                 }
                 toast.success("Data imported successfully.");
                 onDataProcessed(true);
@@ -72,7 +72,7 @@ const ImportFromExcel = ({ onDataProcessed }) => {
 
     return (
         <>
-            <label htmlFor="file-upload" className="custom-file-upload">
+            <label htmlFor="file-upload" className="import_export_button">
                 Import from Excel
             </label>
             <input

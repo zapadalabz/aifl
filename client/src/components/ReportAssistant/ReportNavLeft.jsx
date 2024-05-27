@@ -5,6 +5,7 @@ import StudentContext from "./StudentContext";
 import ExportToExcel from "./ExportToExcel";
 import ImportFromExcel from "./ImportFromExcel";
 import { updateStudentList } from "../../scripts/playwright";
+import { toast } from 'react-toastify';
 
 
 export default function ReportNavLeft({courses, user}) {
@@ -13,9 +14,10 @@ export default function ReportNavLeft({courses, user}) {
     let options = [];
     const handleImport = (response) => {
         if(response){
-            updateStudentList(user.email, state.courseList);
+            console.log("Importing data...");
         }
     }
+
     for (const course of courses) {
         options.push({value: course.id, label: course.code});
     }
@@ -49,6 +51,11 @@ export default function ReportNavLeft({courses, user}) {
             </Row>
             <Row className="mt-2 mx-0">
                 <ImportFromExcel onDataProcessed={handleImport}/>
+            </Row>
+            <Row className="mt-2 mx-0">
+                <button className="import_export_button" onClick={() => toast.error("Terrible Comments. It's easier to just start over.")}>
+                    Apply BH Styling
+                </button>
             </Row>
         </Container>
     );

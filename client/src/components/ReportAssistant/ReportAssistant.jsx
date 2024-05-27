@@ -167,13 +167,22 @@ export default function ReportAssistant({user, setUser}) {
     const handleCommentClick = (comment) => {
         //console.log(focusedStudent.current);
         //console.log(state.courses[focusedStudent.current.course_id].studentList[focusedStudent.current.student_index].first_name);
-        const newComment = state.courseList[focusedStudent.current.student_index].comment + " " + comment;
+        comment = comment.replaceAll('#', focusedStudent.current.student_name);
+        const newComment = state.courseList[focusedStudent.current.student_index].comment + comment + " ";
         dispatch({
           type: 'UPDATE_STUDENT',
           payload: {
             student_index: focusedStudent.current.student_index,
             updates: {comment: newComment},
           }
+        });
+        let next_heading = (state.selectedCommentHeading + 1) % state.commentBank.length;
+        if (state.commentBank[next_heading].comments === "") { next_heading = 0}
+        dispatch({
+            type: 'SET_SELECTED_COMMENT_HEADING',
+            payload: {
+                selectedCommentHeading: next_heading
+            }
         });
       }
 
@@ -193,11 +202,31 @@ export default function ReportAssistant({user, setUser}) {
     }
 
     const handleScroll = () => {
+        function extractProperName(name) {
+            let match = name.match(/\((.*?)\)/); // Check for content inside brackets
+            if (match) {
+                return match[1].trim();
+            }
+            
+            let pipeIndex = name.indexOf('|'); // Check for content after '|'
+            if (pipeIndex !== -1) {
+                return name.substring(pipeIndex + 1).trim();
+            }
+            
+            let commaIndex = name.indexOf(','); // If none of the above, return the content after the comma
+            if (commaIndex !== -1) {
+                return name.substring(commaIndex + 1).trim();
+            }
+            
+            return null; // Return null if no proper name is found by the given criteria
+        }
         if(state.selectedCourses.length > 0){
             try{
                 let index = Math.abs(Math.ceil((reportMainRef.current.children[0].getBoundingClientRect().top)/(reportMainRef.current.children[0].getBoundingClientRect().top-reportMainRef.current.children[1].getBoundingClientRect().top)));
                 if(index < state.courseList.length){
-                    focusedStudent.current = {course_id: state.selectedCourses[0], student_name: state.courseList[index].name, student_index: index};
+                    let name = extractProperName(state.courseList[index].name);
+                    
+                    focusedStudent.current = {course_id: state.selectedCourses[0], student_name: name, student_index: index};
                 }
             }catch{
                 focusedStudent.current = null;

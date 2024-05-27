@@ -4,6 +4,8 @@ require("dotenv").config();
 
 var TurndownService = require('turndown');
 
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const recordPlaywrightRoutes = express.Router();
 
 const browsers = {};
@@ -226,6 +228,8 @@ recordPlaywrightRoutes.post('/playwright/updateStudentCardList', async (req, res
     const studentObjs = req.body.studentObj;
     try{
         for(const studentObj of Object.values(studentObjs)){
+            await delay(100);
+            console.log(studentObj.name);
             // XPath to find the exact text match (note: this is case-sensitive)
             const xpathExpression = `div[data-student='${studentObj.id}']`;
     
@@ -235,7 +239,6 @@ recordPlaywrightRoutes.post('/playwright/updateStudentCardList', async (req, res
             //Update the comment
             const commentElement = await studentCard.$('div.student-comment div.fr-element.fr-view');
             await commentElement.fill(studentObj.comment);
-    
             //Update the MYP Criteria
             if(studentObj.program === "myp"){
                 const criteria_grades = await studentCard.$$('div.form-group.completion-warning-criteria');
@@ -254,6 +257,7 @@ recordPlaywrightRoutes.post('/playwright/updateStudentCardList', async (req, res
                         const btn_index = parseInt(studentObj["MYP"][criteria_label_text])+1;
                         await points_btn[btn_index].click();
                     }
+                    await delay(100);
                 }
             }
     
@@ -266,28 +270,38 @@ recordPlaywrightRoutes.post('/playwright/updateStudentCardList', async (req, res
                 if(studentObj[label]===""){
                     await combobox.press("ArrowDown");
                     for(i=0; i<22; i++){
+                        await delay(10);
                         await combobox.press("ArrowUp");
                     }
+                    await delay(200);
                     await combobox.press("Enter");
                 }else{
                     if(label === "Overall Mark"){
                         await combobox.press("N");
+                        await delay(10);
                         if (studentObj[label].length === 1){
                             await combobox.press(studentObj[label][0]);
+                            await delay(10);
                             await combobox.press(studentObj[label][0]);
-                        }else if (studentObj[detail][1] === "-"){
+                            await delay(10);
+                        }else if (studentObj[label][1] === "-"){
                             await combobox.press(studentObj[label][0]);
+                            await delay(10);
                             await combobox.press(studentObj[label][0]);
+                            await delay(10);
                             await combobox.press(studentObj[label][0]);
+                            await delay(10);
                         }else{
-                            await combobox.press(studentObj[label][0]);                            
+                            await combobox.press(studentObj[label][0]); 
+                            await delay(10);                           
                         }
                     }else{
+                        await delay(10);
                         await combobox.press(studentObj[label][0]);
+                        await delay(10);
                     }
-                }
-                
-                
+                }                
+                await delay(10);
             }
         }
         res.send({status:"Success"});
