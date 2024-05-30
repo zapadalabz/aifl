@@ -118,7 +118,7 @@ export default function ReportAssistant({user, setUser}) {
                         payload: {}
                     });                
                 });
-            }, 1500);
+            }, 3000);
         }
 
         // Cleanup function: Clear the timer when the component unmounts
