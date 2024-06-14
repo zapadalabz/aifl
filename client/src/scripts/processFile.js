@@ -1,9 +1,37 @@
 //import pdfjsLib from 'pdfjs-dist';
 //const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
 import * as pdfjsLib from 'pdfjs-dist/webpack';
+import mammoth from 'mammoth';
 import { toast } from 'react-toastify';
 
-export function extractPDFText(files){
+
+
+async function convertDocxToMarkdown(files) {
+    function readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsArrayBuffer(file);
+        });
+    }
+    
+    const mdStrings = [];
+  
+    for (const file of files) {
+      try {
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        const mdString = result.value.replace(/!\[.*?\]\(.*?\)/g, ''); // Remove images
+        mdStrings.push(mdString);
+      } catch (error) {
+        toast.error(`Failed to convert ${file} to markdown`);
+      }
+    }
+    return mdStrings;
+}
+
+function processPDFs(files){
     const promises = [];
     for(var i = 0; i < files.length; i++){
         const reader = new FileReader();
@@ -41,4 +69,20 @@ export function extractPDFText(files){
             
     }
     return Promise.all(promises);
+}
+
+export async function processFiles(files){
+    const pdfs = [];
+    const docx = [];
+    for(var i = 0; i < files.length; i++){
+        if(files[i].type === "application/pdf"){
+            pdfs.push(files[i]);
+        }else if(files[i].type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"){
+            docx.push(files[i]);
+        }
+    }
+    const pdfTexts = await processPDFs(pdfs);
+    const docxTexts = await convertDocxToMarkdown(docx);
+    const list_filesTexts = pdfTexts.concat(docxTexts);
+    return list_filesTexts;
 }

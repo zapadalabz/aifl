@@ -1,7 +1,7 @@
 import { PROXY, FLASK_PROXY } from './config';
 import { toast } from 'react-toastify';
 
-async function handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory) {
+async function handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory, setIsThinking) {
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let partialText = '';
@@ -15,6 +15,7 @@ async function handleStreamedResponseMessages(response, chatHistory, setChatHist
             const { done, value } = await reader.read();
 
             if (done) {
+                setIsThinking(false);
                 break;
             }
 
@@ -50,7 +51,7 @@ export async function loopSetChatHistory(setChatHistory){
 }
 
 
-export async function postOpenAIResponse(chatHistory, setChatHistory){
+export async function postOpenAIResponse(chatHistory, setChatHistory, setIsThinking){
     const lengthChatHistory = chatHistory.length;
 
     const chat = chatHistory[lengthChatHistory - 2];
@@ -70,7 +71,7 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
                 }
                 return response;
             })
-            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
+            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory, setIsThinking))
             .catch((error) => {
                 toast.error(error.toString());
             });        
@@ -86,13 +87,17 @@ export async function postOpenAIResponse(chatHistory, setChatHistory){
 }
 
 
-export async function postOpenAIChatResponse(chatHistory, setChatHistory, model, token){
+export async function postOpenAIChatResponse(chatHistory, setChatHistory, model, token, chatSettings, setIsThinking){
     const lengthChatHistory = chatHistory.length;
     
-    let systemMessage = `You are an experienced teacher that repsonds using Markdown.`; 
+    //let systemMessage = `You are an experienced teacher that repsonds using Markdown.`; 
     //If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$.`;
-
-    let msgHistory = [{"role" : "system", "content" : systemMessage}]; //Include the attachments into the history
+    let system_message = chatSettings.system_message;
+    if (system_message === ""){
+        system_message = "You are an experienced teacher that responds using Markdown.";
+        localStorage.setItem('chatSettings',JSON.stringify({...chatSettings, "system_message": system_message}));
+    }
+    let msgHistory = [{"role" : "system", "content" : system_message}]; //Include the attachments into the history
 
     for(let i = 0; i < lengthChatHistory-1; i++){
         let chat = chatHistory[i];
@@ -116,7 +121,7 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model,
     try {
         fetch(`${PROXY}/openAI/postChat`, { 
             method: "POST",
-            body: JSON.stringify({"chatHistory": msgHistory, "model": model}),
+            body: JSON.stringify({"chatHistory": msgHistory, "model": model, "temperature": chatSettings.temperature}),
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -128,7 +133,7 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model,
                 }
                 return response;
             })
-            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
+            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory, setIsThinking))
             .catch((error) => {
                 toast.error(error.toString());
             });        
@@ -143,7 +148,7 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model,
     return;
 }
 
-export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHistory, model, token, searchIndex){
+export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHistory, model, token, searchIndex, setIsThinking){
     const lengthChatHistory = chatHistory.length;
     
     let systemMessage = `You are an experienced teacher.
@@ -174,7 +179,7 @@ export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHist
                 }
                 return response;
             })
-            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
+            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory, setIsThinking))
             .catch((error) => {
                 toast.error(error.toString());
             });        

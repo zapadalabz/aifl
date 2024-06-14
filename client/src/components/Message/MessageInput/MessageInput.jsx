@@ -91,7 +91,6 @@ import React, {
     const scrollRef = useRef();
     const msgRef = useRef();
     const attachRef = useRef();
-    const sendRef = useRef();
     const settingsRef = useRef();
     const [stateValue, setStateValue] = useControllableState(value, "");
     const [stateSendDisabled, setStateSendDisabled] = useControllableState(
@@ -115,9 +114,6 @@ import React, {
       get settingsButton() {
         return settingsRef.current;
       },
-      get sendButton() {
-        return sendRef.current;
-      }
     }));
   
     // Set focus
@@ -233,7 +229,6 @@ import React, {
         {sendButton === true && (
           <div className={`${cName}__tools`}>
             <SendButton
-              ref={sendRef}
               onClick={send}
               disabled={attachState.icon==="Loading"?true:disabled === true || stateSendDisabled === true}
             />

@@ -105,6 +105,7 @@ recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response)
     //chatHistory contains system message
     let chatHistory = req.body.chatHistory;
     let currentModel = req.body.model;
+    let temperature = req.body.temperature;
     let resource = OPENAI_RESOURCE;
     let api_key = OPENAI_KEY;
 
@@ -122,6 +123,7 @@ recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response)
             model: currentModel,
             messages: chatHistory,
             stream: true,
+            temperature: temperature,
         });
 
         for await (const chunk of stream){
@@ -185,6 +187,7 @@ recordOPENAIRoutes.route("/openAI/postChatAzureSearch").post(async function (req
                     key: AZURE_SEARCH_SERVICE_ADMIN_KEY,
                     indexName: searchIndex,
                     roleInformation: messages[0].content,
+                    inScope: false,
                 },
               ],
             },

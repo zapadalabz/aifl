@@ -93,6 +93,26 @@
     border-radius: 50%; 
 }
 
+.welcomeMessage{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    background-color: white;
+    margin-bottom: 0px;
+    padding: 20px;
+    white-space: pre-wrap;
+    border: black 1px solid;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.systemMessageInput{
+    width: 100%;
+    max-height: 300px;
+    min-height: 200px;
+    margin-bottom: 2rem;
+}
+
 .attachIcon{
     cursor: pointer;
     color: #6ea9d7;
@@ -119,3 +139,25 @@
     padding: 0px;
 }
 
+.thinking:after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+    animation: ellipsis steps(4, end) 900ms infinite;
+    content: "\2026";
+    /* ascii code for the ellipsis character */
+    width: 0px;
+  }
+  
+  @keyframes ellipsis {
+    to {
+      width: 40px;
+    }
+  }
+  
+  @-webkit-keyframes ellipsis {
+    to {
+      width: 40px;
+    }
+  }

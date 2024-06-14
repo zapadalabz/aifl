@@ -2,12 +2,12 @@ import React, {useState, useRef, useEffect, useContext} from "react";
 //import { MessageInput} from "@chatscope/chat-ui-kit-react";
 import { postOpenAIChatResponse, postOpenAIChatResponseAzureSearch } from "../scripts/openAI";
 import MessageDisplay from "./Message/MessageDisplay";
-import { extractPDFText } from "../scripts/processFile";
+import { processFiles } from "../scripts/processFile";
 import MessageInput from "./Message/MessageInput/MessageInput";
 import Overlay from 'react-bootstrap/Overlay';
 import Stack from 'react-bootstrap/Stack';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons/faFilePdf";
+import { faFileLines } from "@fortawesome/free-regular-svg-icons/faFileLines";
 import { faImage } from "@fortawesome/free-regular-svg-icons/faImage";
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -21,8 +21,10 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
   const imgInput = useRef();
 
   const openAIEnabled = useRef(false);
+  const [chatSettings, setChatSettings] = useState({system_message:"You are an experienced teacher that responds using Markdown.",temperature:0.7});
   const [msgInputValue, setMsgInputValue] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
 
   const [attachText, setAttachText] = useState([]);
   const [imageBase64, setImageBase64] = useState('');
@@ -30,6 +32,19 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
     count:0,
     icon: "paperClip"
   });
+
+  useEffect(()=>{
+    const localChatSettings = localStorage.getItem('chatSettings');
+
+    if(localChatSettings){
+      const local_settings = JSON.parse(localChatSettings);
+      if (local_settings.system_message === ""){
+        setChatSettings({...local_settings, "system_message":"You are an experienced teacher that responds using Markdown."});
+      }else{
+        setChatSettings(local_settings);
+      }      
+    }
+  },[]);
 
   useEffect(()=>{
       //console.log(attachText);
@@ -66,10 +81,11 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
     //console.log(openAIEnabled.current);
     if(openAIEnabled.current){
       openAIEnabled.current = false;
+      setIsThinking(true);
       if(searchIndex!==""){
-        postOpenAIChatResponseAzureSearch(chatHistory, setChatHistory, selectedModel, token, searchIndex);
+        postOpenAIChatResponseAzureSearch(chatHistory, setChatHistory, selectedModel, token, searchIndex, setIsThinking);
       }else{
-        postOpenAIChatResponse(chatHistory, setChatHistory, selectedModel, token);
+        postOpenAIChatResponse(chatHistory, setChatHistory, selectedModel, token, chatSettings, setIsThinking);
       }
       
     }
@@ -112,7 +128,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
     const handleFileChange = event => {
         //setFiles([...files, ...event.target.files]);
         //console.log(event.target.files);
-        extractPDFText(event.target.files).then((text) => setAttachText(text))
+        processFiles(event.target.files).then((text) => setAttachText(text))
         .catch((err) => console.log(err));
         setAttachState(prevState => ({ ...prevState, icon: "Loading"}));
         event.target.value = '';
@@ -144,7 +160,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
 
   return (
     <div className="mainChat">
-            <MessageDisplay messages={chatHistory} messagesEndRef={messagesEndRef}/>
+            <MessageDisplay messages={chatHistory} messagesEndRef={messagesEndRef} chatSettings={chatSettings} setChatSettings={setChatSettings} isThinking={isThinking}/>
             <div as={MessageInput} className="messageInputDIV">
                 <MessageInput ref={inputRef} onPaste={onPaste} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={searchIndex===""?true:false} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachState={attachState}/>
                 <Overlay target={inputRef.current!==undefined&&searchIndex===""?inputRef.current.attachButton.buttonA.button:inputRef} show={showOverlay} placement="top" rootClose onHide={() => setShowOverlay(false)}>
@@ -168,7 +184,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
                       }}
                     >
                       <Stack direction="horizontal" gap={3}>
-                          <FontAwesomeIcon className="fa-2x attachIcon" icon={faFilePdf} onClick={handlePDFClick}/>
+                          <FontAwesomeIcon className="fa-2x attachIcon" icon={faFileLines} onClick={handlePDFClick}/>
                           <FontAwesomeIcon className="fa-2x attachIcon" icon={faImage} onClick={handleImgIconClick}/>
                       </Stack>
                     </div>
@@ -201,7 +217,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
             </div>
             
             <div style={{display: 'none'}}>
-                <input type="file" accept=".pdf" ref={fileInput} onChange={(e) => handleFileChange(e)} multiple></input>
+                <input type="file" accept=".pdf, .docx" ref={fileInput} onChange={(e) => handleFileChange(e)} multiple></input>
             </div>
             <div style={{display: 'none'}}>
                 <input type="file" accept="image/*" ref={imgInput} onChange={(e) => handleImageChange(e)}></input>

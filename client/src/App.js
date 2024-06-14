@@ -3,13 +3,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/chat.css';
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route } from "react-router-dom";
 import jwt_decode from "jwt-decode";
 import { googleLogout } from '@react-oauth/google';
 import { getUserByEmail, upsertUser } from "./scripts/mongo";
-import { getUserRole } from "./scripts/managebac";
-import { managebacLogin } from './scripts/playwright';
 
 import LeftSideNav from './components/LeftSideNav';
 import RightSideNav from './components/RightSideNav';
@@ -19,11 +17,11 @@ import Row from 'react-bootstrap/Row';
 import ChatPage from './components/ChatPage';
 import FavModal from './components/Modal/FavModal';
 import Signin from './components/Signin';
-import ExcelReader from './components/ExcelReader';
 import ReportAssistant from './components/ReportAssistant/ReportAssistant';
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { skyLogin, skyLogout, isStudent } from './scripts/sky';
 
 
 /* userObject //BrightSpace API whomai: {"Identifier":"1163","FirstName":"Zach","LastName":"Medendorp","Pronouns":null,"UniqueName":"zmedendorp@branksome.on.ca","ProfileIdentifier":"FhoF5s161j"}
@@ -79,21 +77,32 @@ function App() {
                 }else{
                   setUser(null)
                 }
-                /*
                 if(res.role){
-                  setUser(res);
+                  setUser(res)
                 }else{
-                  getUserRole(res.email).then((role)=>{
-                    res.role = role;
-                    setUser(res);
-                    upsertUser(res).then((res)=>{
-                      console.log(res);
+                  skyLogin().then((res)=>{
+                    var token = res.Token;
+                    var userID = res.UserId;
+                    isStudent(token, userID).then((res)=>{
+                      if(res){
+                        setUser({...user, "role":"Student"});
+                      }else{
+                        setUser({...user, "role":"Staff"});
+                      }
+                      upsertUser(user).then((res)=>{
+                        console.log(res);
+                      }).catch((err)=>{ toast.error(err.toString()); })
+                      skyLogout(token, userID).then((res)=>{
+                        console.log(res);
+                      }).catch((err)=>{ toast.error(err.toString()); })
+                    }).catch((err)=>{
+                      toast.error(err.toString());
                     });
                   }).catch((err)=>{
                     toast.error(err.toString());
                   });
+                  
                 }
-                */
               }).catch((err)=>{
                   toast.error(err.toString());
               });
@@ -149,7 +158,6 @@ function App() {
                   <FavModal showFav={showFav} setShowFav={setShowFav} handleResponse={handleResponse} setUser={setUser} user={user}/> 
                 </>
                 } />
-                <Route path="/ExcelReader" exact element= {<ExcelReader/>} />
                 <Route path="/ReportAssistant" exact element= {<ReportAssistant user={user} setUser={setUser}/>} />
                 <Route path="/:searchIndex" element={
                 <>

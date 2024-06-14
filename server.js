@@ -17,6 +17,7 @@ var port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use(require("./routes/record_sky"));
 app.use(require("./routes/record_mongo"));
 app.use(require("./routes/record_managebac"));
 app.use(require("./routes/record_playwright"));
@@ -71,15 +72,16 @@ function limitRate(req, res, next) {
     if (err) {
       return res.sendStatus(403).send('Session expired. Please refresh the page.');
     }
-    let limit = 25;
-
+    let limit = 10;
+    if (user.role === "Staff") limit = 30;
     if (!requests[user.email]) {
       requests[user.email] = { count: 1, firstRequest: Date.now() };
     } else {
       requests[user.email].count += 1;
       // Assuming limit is 100 requests per 15 minutes
       if (requests[user.email].count > limit && Date.now() - requests[user.email].firstRequest < 15 * 60 * 1000) {
-        return res.status(429).send('Too many requests');
+        const timeLeft = (15 * 60 * 1000 - (Date.now() - requests[user.email].firstRequest)) / 1000;
+        return res.status(429).send(`Too many requests: ${limit} per 15 minutes. Please try again in ${timeLeft} seconds.`);
       } else if (Date.now() - requests[user.email].firstRequest >= 15 * 60 * 1000) {
         // Reset count after 15 minutes
         requests[user.email] = { count: 1, firstRequest: Date.now() };
