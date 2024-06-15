@@ -49,6 +49,7 @@ export default function Signin({setUser}){
                                     upsertUser(newUser).then(()=>{
                                         setUser(newUser);
                                         localStorage.setItem('userCredential',credentialResponse.credential);
+                                        window.location.reload();
                                     });                                                                  
                                 }
                             });
