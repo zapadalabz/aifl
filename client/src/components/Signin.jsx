@@ -37,39 +37,19 @@ export default function Signin({setUser}){
                                 }
                                 else{
                                     var role = "";
-                                    skyLogin().then((res)=>{
-                                        //console.log(res);
-                                        var token = res.Token;
-                                        var userID = res.UserId;
-                                        isStudent(token, userID).then((res)=>{
-                                            if(res){
-                                            role = "Student";
-                                            }else{
-                                            role = "Staff";
-                                            }
-                                            const newUser = {
-                                                firstName: tempUser.given_name,
-                                                lastName: tempUser.family_name,
-                                                email: tempUser.email,
-                                                favPrompts: [],
-                                                picture: tempUser.picture,
-                                                managebacID: null,
-                                                role: role,
-                                            };
-                                            upsertUser(newUser).then(()=>{
-                                                setUser(newUser);
-                                                localStorage.setItem('userCredential',credentialResponse.credential);
-                                            });
-                                            //Logout of Sky                                           
-                                            skyLogout(token, userID).then((res)=>{
-                                            console.log(res);
-                                            }).catch((err)=>{ toast.error(err.toString()); })
-                                        }).catch((err)=>{
-                                          toast.error(err.toString());
-                                        });
-                                      }).catch((err)=>{
-                                        toast.error(err.toString());
-                                      });                                                                   
+                                    const newUser = {
+                                        firstName: tempUser.given_name,
+                                        lastName: tempUser.family_name,
+                                        email: tempUser.email,
+                                        favPrompts: [],
+                                        picture: tempUser.picture,
+                                        managebacID: null,
+                                        role: role,
+                                    };
+                                    upsertUser(newUser).then(()=>{
+                                        setUser(newUser);
+                                        localStorage.setItem('userCredential',credentialResponse.credential);
+                                    });                                                                  
                                 }
                             });
 

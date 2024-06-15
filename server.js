@@ -72,8 +72,8 @@ function limitRate(req, res, next) {
     if (err) {
       return res.sendStatus(403).send('Session expired. Please refresh the page.');
     }
-    let limit = 10;
-    if (user.role === "Staff") limit = 30;
+    let limit = 30;
+    //if (user.role === "Staff") limit = 30;
     if (!requests[user.email]) {
       requests[user.email] = { count: 1, firstRequest: Date.now() };
     } else {

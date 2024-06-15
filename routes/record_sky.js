@@ -86,7 +86,7 @@ recordSKYRoutes.route("/sky/isStudent").post(async function (req, response) {
                 'Accept-Encoding': 'gzip, deflate, br',
             },
         });
-        //console.log(data);
+        console.log(await res.json());
         if (res.json().length > 0) {
             response.send(true);//Student
         }else{

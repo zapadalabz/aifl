@@ -63,7 +63,7 @@ function App() {
   }, []);
 
  //Check if user has a persistent login in localStorage
- useEffect(() => {
+ useEffect(() => {  
   const persistentLogin = localStorage.getItem('userCredential');
 
   if(persistentLogin){
@@ -75,15 +75,16 @@ function App() {
                 if(res.email){
                   setUser(res);
                 }else{
-                  setUser(null)
+                  handleLogOut();
                 }
+                /*
                 if(res.role){
                   setUser(res)
                 }else{
                   skyLogin().then((res)=>{
                     var token = res.Token;
                     var userID = res.UserId;
-                    isStudent(token, userID).then((res)=>{
+                    isStudent(token, user.email).then((res)=>{
                       if(res){
                         setUser({...user, "role":"Student"});
                       }else{
@@ -102,7 +103,7 @@ function App() {
                     toast.error(err.toString());
                   });
                   
-                }
+                }*/
               }).catch((err)=>{
                   toast.error(err.toString());
               });
