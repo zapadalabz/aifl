@@ -94,7 +94,7 @@ export async function postOpenAIChatResponse(chatHistory, setChatHistory, model,
     //If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$.`;
     let system_message = chatSettings.system_message;
     if (system_message === ""){
-        system_message = "You are an experienced teacher that responds using Markdown.";
+        system_message = "You are an experienced teacher who loves helping out.";
         localStorage.setItem('chatSettings',JSON.stringify({...chatSettings, "system_message": system_message}));
     }
     let msgHistory = [{"role" : "system", "content" : system_message}]; //Include the attachments into the history

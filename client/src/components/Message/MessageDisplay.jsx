@@ -116,7 +116,7 @@ const preprocessLaTeX = (content) => {
   const handleRestoreDefaultSettings = () => {
     const defaultSettings = {
       temperature: 0.7,
-      system_message: "You are an experienced teacher that responds using Markdown."
+      system_message: "You are an experienced teacher who loves helping out."
     };
     setChatSettings(defaultSettings);
     localStorage.setItem('chatSettings',JSON.stringify(defaultSettings));

@@ -39,7 +39,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
     if(localChatSettings){
       const local_settings = JSON.parse(localChatSettings);
       if (local_settings.system_message === ""){
-        setChatSettings({...local_settings, "system_message":"You are an experienced teacher that responds using Markdown."});
+        setChatSettings({...local_settings, "system_message":"You are an experienced teacher who loves helping out."});
       }else{
         setChatSettings(local_settings);
       }      
