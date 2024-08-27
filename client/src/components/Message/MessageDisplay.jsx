@@ -60,7 +60,7 @@ const preprocessLaTeX = (content) => {
             const codeContent = lines.slice(1, -1).join('\n'); // Get rid of the first and last "```"
             if (language === 'jsx' || language === 'Javascript') { language = 'javascript'; }
             return (
-              <SyntaxHighlighter language={language || 'text'} style={atomOneDarkReasonable} key={index}>
+              <SyntaxHighlighter className="codeBlock" language={language || 'text'} style={atomOneDarkReasonable} key={index}>
                 {codeContent}
               </SyntaxHighlighter>
             );
