@@ -1,4 +1,4 @@
-import { PROXY, FLASK_PROXY } from './config';
+import { PROXY } from './config';
 import { toast } from 'react-toastify';
 
 async function handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory, setIsThinking) {
@@ -180,52 +180,6 @@ export async function postOpenAIChatResponseAzureSearch(chatHistory, setChatHist
                 return response;
             })
             .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory, setIsThinking))
-            .catch((error) => {
-                toast.error(error.toString());
-            });        
-        
-    } catch (err) {
-        alert("Error: " + err.message);
-        toast.error(err.message);
-    } finally {
-        //nothing
-    }
-    
-    return;
-}
-
-export async function postPythonOpenAIChatResponse(chatHistory, setChatHistory, model){
-    const lengthChatHistory = chatHistory.length;
-    //console.log(model);
-
-    let systemMessage = `You are an experienced teacher helping fellow colleagues.
-    If you need to write an equation, then wrap it in $ symbols. For example, $x^2 + y^2 = r^2$`;
-    let msgHistory = [{"role" : "system", "content" : systemMessage}]; //Include the attachments into the history
-
-    for(let i = 0; i < lengthChatHistory-1; i++){
-        let chat = chatHistory[i];
-        if(chat.role === "user"){
-            msgHistory.push({"role" : chat.role, "content" : chat.content + chat.attachments.map((text, index) => `\n\ndocument_${index}: \`\`\`${text}\`\`\``).join('')});
-        }else{
-            msgHistory.push({"role" : chat.role, "content" : chat.content});
-        } 
-    }
-
-    try {
-        fetch(`${FLASK_PROXY}/openAI/postMessage`, { 
-            method: "POST",
-            body: JSON.stringify({"chatHistory": msgHistory, "model": model}),
-            headers: {
-            'Content-Type': 'application/json'
-            },
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}:${response.statusText}`);
-                }
-                return response;
-            })
-            .then((response)=>handleStreamedResponseMessages(response, chatHistory, setChatHistory, lengthChatHistory))
             .catch((error) => {
                 toast.error(error.toString());
             });        

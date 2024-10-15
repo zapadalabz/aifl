@@ -28,8 +28,8 @@ User
 */
 
 // This section will help you get a list of all the User records.
-recordRoutes.route("/users").get(async function (req, response) {
-    let db_connect = dbo.getDb();
+recordRoutes.route("/users").get(async (req, response) => {
+    const db_connect = dbo.getDb();
 
     db_connect
       .collection("Users") 
@@ -43,31 +43,41 @@ recordRoutes.route("/users").get(async function (req, response) {
   });
 
 // Get user by Brightspace ID(Identifier) also can Check if User Exists(ie. needs to make an account)
-recordRoutes.route("/users/get/:email").get(async function (req, response) {
-    let db_connect = dbo.getDb();
-    let myquery = { email: req.params.email };
-    try {
-      db_connect
-      .collection("Users") 
-      .findOne(myquery)
-      .then((data) => {
-        //console.log(data);
-        var role = null;
+recordRoutes.route("/users/get/:email").get(async (req, response) => {
+  const db_connect = dbo.getDb();
+  const myquery = { email: req.params.email };
 
-        if(data){
-          role = data.role || null;
-        }
+  try {
+      const user = await db_connect.collection("Users").findOne(myquery);
 
-        const token = jwt.sign({ email: req.params.email, role: role }, process.env.JWT_SECRET, { expiresIn: '240h' });
-        response.json({...data, token: token});
-       
-      });
-    } catch (error) {
+      let role = null;
+      let data = user;
+
+      if (!user) {
+          // If user is not found, upsert (insert the user)
+          const newUser = {
+              email: req.params.email,
+              role: null // You can set default role or other fields if needed
+          };
+          const result = await db_connect.collection("Users").updateOne(
+              myquery,
+              { $setOnInsert: newUser },
+              { upsert: true }
+          );
+
+          // Fetch the newly inserted user
+          data = await db_connect.collection("Users").findOne(myquery);
+      } else {
+          role = user.role || null;
+      }
+
+      const token = jwt.sign({ email: req.params.email, role: role }, process.env.JWT_SECRET, { expiresIn: '240h' });
+      response.json({ ...data, token: token });
+  } catch (error) {
       console.log(error);
-    }
-    
-  
-  });
+      response.status(500).send("Internal Server Error");
+  }
+});
 
 //Create or Update a User
 recordRoutes.route("/users/upsert").post(async function (req, response) {
@@ -311,6 +321,61 @@ recordRoutes.route("/commentbank/update").post(async function (req, response) {
   response.json(courseObj);
 });
 
+//BLACK-BAUD USER
+recordRoutes.route("/BB/users/getByID/:userID").get(async (req, response) => {
+  //console.log(req.params.userID);
+  const db_connect = dbo.getDb();
+  const myquery = { userID: Number.parseInt(req.params.userID) };
 
+  try {
+      const user = await db_connect.collection("BB_Users").findOne(myquery);
+      let data = user;
+
+      if (!user) {
+          // If user is not found, upsert (insert the user)
+          const newUser = {
+            userID: Number.parseInt(req.params.userID),
+            acc_creation_date: new Date().toISOString(),
+          };
+          const result = await db_connect.collection("BB_Users").updateOne(
+              myquery,
+              { $setOnInsert: newUser },
+              { upsert: true }
+          );
+
+          // Fetch the newly inserted user
+          data = await db_connect.collection("BB_Users").findOne(myquery);
+      }
+
+      const token = jwt.sign({ email: req.params.userID, role: null }, process.env.JWT_SECRET, { expiresIn: '240h' });
+      response.json({ ...data, token: token });
+  } catch (error) {
+      console.log(error);
+      response.status(500).send("Internal Server Error");
+  }
+});
+
+
+recordRoutes.route("/BB/updateUser").post(async (req, response) => {
+  const db_connect = dbo.getDb();
+  const userObj = req.body.userObj;
+  const myquery = { userID: userObj.userID };
+  const options = { upsert: true };
+
+  // Remove the _id field if it exists, as it should not be updated
+  delete userObj._id;
+
+  try {
+      const user_response = await db_connect.collection("BB_Users").updateOne(
+          myquery,
+          { $set: userObj }, // Use $set to update the fields in userObj
+          options
+      );
+      response.json(user_response);
+  } catch (error) {
+      console.error("Error occurred:", error);
+      response.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = recordRoutes;

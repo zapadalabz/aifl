@@ -204,4 +204,42 @@ async function updateComments(email, filename, commentBank){
     
 }
 
-export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, searchPromptsByTag, addPrompt, updatePrompt, deletePrompt, updateComments, getComments};
+//BLACK BAUD USERS
+async function getUserByID(userID) {
+    try {
+        const response = await fetch(`${PROXY}/BB/users/getByID/${userID}`);
+        const output = await response.json();
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        if (output != null) {
+            return output;
+        }
+            return false;
+    } catch (error) {
+        toast.error(error.toString());
+    }
+}
+
+async function updateBBUser(userObj){
+    //updates existing prompt
+    try{
+        const response = await fetch(`${PROXY}/BB/updateUser`, {
+            method: "POST",
+            body: JSON.stringify(
+                {userObj: userObj,
+            }),
+            headers: {
+            'Content-Type': 'application/json'
+            },
+        });
+        if (!response.ok) {
+            throw new Error(response.json());
+        }
+    }catch(error){
+        toast.error(error.toString());
+    }
+    
+}
+
+export {getUsers, getUserByEmail, upsertUser, getPrompts, getUserFavourites, searchPromptsByTag, addPrompt, updatePrompt, deletePrompt, updateComments, getComments, getUserByID, updateBBUser};

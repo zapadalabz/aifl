@@ -8,10 +8,6 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import { toast } from 'react-toastify';
-
-import { skyLogin, skyLogout, isStudent } from '../scripts/sky';
-
 export default function Signin({setUser}){
     const [allowed, setAllowed] = useState(true);
 

@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect, useContext} from "react";
 //import { MessageInput} from "@chatscope/chat-ui-kit-react";
 import { postOpenAIChatResponse, postOpenAIChatResponseAzureSearch } from "../scripts/openAI";
-import MessageDisplay from "./Message/MessageDisplay";
+import BBMessageDisplay from "./Message/BBMessageDisplay";
 import { processFiles } from "../scripts/processFile";
 import MessageInput from "./Message/MessageInput/MessageInput";
 import Overlay from 'react-bootstrap/Overlay';
@@ -12,7 +12,7 @@ import { faImage } from "@fortawesome/free-regular-svg-icons/faImage";
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-export default function ChatPage({chatHistory, setChatHistory, selectedModel, token}) {
+export default function ChatPageBB({chatHistory, setChatHistory, selectedModel, token, user}) {
   const params = useParams();
   const searchIndex = params.searchIndex||"";
 
@@ -160,68 +160,68 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
 
   return (
     <div className="mainChat">
-            <MessageDisplay messages={chatHistory} messagesEndRef={messagesEndRef} chatSettings={chatSettings} setChatSettings={setChatSettings} isThinking={isThinking}/>
-            <div as={MessageInput} className="messageInputDIV">
-                <MessageInput ref={inputRef} onPaste={onPaste} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={searchIndex===""?true:false} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachState={attachState}/>
-                <Overlay target={inputRef.current!==undefined&&searchIndex===""?inputRef.current.attachButton.buttonA.button:inputRef} show={showOverlay} placement="top" rootClose onHide={() => setShowOverlay(false)}>
-                  {({
-                    placement: _placement,
-                    arrowProps: _arrowProps,
-                    show: _show,
-                    popper: _popper,
-                    hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                    ...props
-                  }) => (
-                    <div
-                      {...props}
-                      style={{
-                        position: 'absolute',
-                        backgroundColor: 'rgba(0, 0, 0, 0.0)',
-                        padding: '2px 5px',
-                        color: 'white',
-                        borderRadius: 3,
-                        ...props.style,
-                      }}
-                    >
-                      <Stack direction="horizontal" gap={3}>
-                          <FontAwesomeIcon className="fa-2x attachIcon" icon={faFileLines} onClick={handlePDFClick}/>
-                          <FontAwesomeIcon className="fa-2x attachIcon" icon={faImage} onClick={handleImgIconClick}/>
-                      </Stack>
-                    </div>
-                  )}
-                </Overlay>
-                <Overlay target={inputRef.current!==undefined&&searchIndex===""?inputRef.current.attachButton.buttonA.button:inputRef} show={imageBase64 !== ''} placement="top" rootClose onHide={() => setShowOverlay(false)}>
-                  {({
-                    placement: _placement,
-                    arrowProps: _arrowProps,
-                    show: _show,
-                    popper: _popper,
-                    hasDoneInitialMeasure: _hasDoneInitialMeasure,
-                    ...props
-                  }) => (
-                    <div
-                      {...props}
-                      style={{
-                        position: 'absolute',
-                        backgroundColor: 'rgba(0, 0, 0, 0.0)',
-                        padding: '2px 5px',
-                        color: 'white',
-                        borderRadius: 3,
-                        ...props.style,
-                      }}
-                    >
-                      <img src={imageBase64} alt="Pasted" style={{maxWidth: '200px', maxHeight: '200px'}} onClick={() => handleImgClick()}/>
-                    </div>
-                  )}
-                </Overlay>
-            </div>
-            
-            <div style={{display: 'none'}}>
-                <input type="file" accept=".pdf, .docx" ref={fileInput} onChange={(e) => handleFileChange(e)} multiple></input>
-            </div>
-            <div style={{display: 'none'}}>
-                <input type="file" accept="image/*" ref={imgInput} onChange={(e) => handleImageChange(e)}></input>
-            </div>
+      <BBMessageDisplay messages={chatHistory} messagesEndRef={messagesEndRef} chatSettings={chatSettings} setChatSettings={setChatSettings} isThinking={isThinking} user={user}/>
+      <div as={MessageInput} className="messageInputDIV">
+          <MessageInput ref={inputRef} onPaste={onPaste} onChange={msg => setMsgInputValue(msg)} value={msgInputValue} sendButton={true} attachButton={searchIndex===""?true:false} onSend={handleSend} onAttachClick={handleAttachClick} className="messageInput" attachState={attachState}/>
+          <Overlay target={inputRef.current!==undefined&&searchIndex===""?inputRef.current.attachButton.buttonA.button:inputRef} show={showOverlay} placement="top" rootClose onHide={() => setShowOverlay(false)}>
+            {({
+              placement: _placement,
+              arrowProps: _arrowProps,
+              show: _show,
+              popper: _popper,
+              hasDoneInitialMeasure: _hasDoneInitialMeasure,
+              ...props
+            }) => (
+              <div
+                {...props}
+                style={{
+                  position: 'absolute',
+                  backgroundColor: 'rgba(0, 0, 0, 0.0)',
+                  padding: '2px 5px',
+                  color: 'white',
+                  borderRadius: 3,
+                  ...props.style,
+                }}
+              >
+                <Stack direction="horizontal" gap={3}>
+                    <FontAwesomeIcon className="fa-2x attachIcon" icon={faFileLines} onClick={handlePDFClick}/>
+                    <FontAwesomeIcon className="fa-2x attachIcon" icon={faImage} onClick={handleImgIconClick}/>
+                </Stack>
+              </div>
+            )}
+          </Overlay>
+          <Overlay target={inputRef.current!==undefined&&searchIndex===""?inputRef.current.attachButton.buttonA.button:inputRef} show={imageBase64 !== ''} placement="top" rootClose onHide={() => setShowOverlay(false)}>
+            {({
+              placement: _placement,
+              arrowProps: _arrowProps,
+              show: _show,
+              popper: _popper,
+              hasDoneInitialMeasure: _hasDoneInitialMeasure,
+              ...props
+            }) => (
+              <div
+                {...props}
+                style={{
+                  position: 'absolute',
+                  backgroundColor: 'rgba(0, 0, 0, 0.0)',
+                  padding: '2px 5px',
+                  color: 'white',
+                  borderRadius: 3,
+                  ...props.style,
+                }}
+              >
+                <img src={imageBase64} alt="Pasted" style={{maxWidth: '200px', maxHeight: '200px'}} onClick={() => handleImgClick()}/>
+              </div>
+            )}
+          </Overlay>
+      </div>
+      
+      <div style={{display: 'none'}}>
+          <input type="file" accept=".pdf, .docx" ref={fileInput} onChange={(e) => handleFileChange(e)} multiple></input>
+      </div>
+      <div style={{display: 'none'}}>
+          <input type="file" accept="image/*" ref={imgInput} onChange={(e) => handleImageChange(e)}></input>
+      </div>
     </div>
   )
 }

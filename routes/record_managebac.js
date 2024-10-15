@@ -8,12 +8,12 @@ const headers = {
     "auth-token": MANAGEBAC_TOKEN,  // replace this with your actual token
 };
 
-recordManagebacRoutes.route("/managebac/getID/:email").get(async function (req, response) {
+recordManagebacRoutes.route("/managebac/getID/:email").get(async (req, response) => {
     //get user ID from managebac using their email
-    var email = req.params.email;
-    var url = "https://api.managebac.com/v2/teachers";
+    const email = req.params.email;
+    const url = "https://api.managebac.com/v2/teachers";
 
-    var params = {
+    const params = {
         "archived": "false",
         "per_page": 10,
         "q": email,
