@@ -8,6 +8,7 @@ const issuer_domain = process.env.ISSUER_DOMAIN;
 const token_name = process.env.TOKEN_NAME;
 const audience_domain = process.env.AUDIENCE_DOMAIN;
 const sso_path = process.env.SSO_PATH;
+
 const DEV = process.env.DEV === 'true' || false;
 
 const BB_userID = 5623163;
