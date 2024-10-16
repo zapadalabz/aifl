@@ -42,7 +42,6 @@ recordBlackBaudRoutes.route("/blackbaud-sso").get(async (req, res) => {
             //console.log(responseData);
 
             // Redirect to a React route with any necessary query parameters
-            //console.log(`${DEV&&"http://localhost:3000"}/BB?sso_token=${ssoToken}`);
             res.redirect(`${DEV&&"http://localhost:3000"}/BB?sso_token=${ssoToken}`);
         } catch (error) {
             console.error(error);
