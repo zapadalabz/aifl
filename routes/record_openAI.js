@@ -58,10 +58,10 @@ recordOPENAIRoutes.route("/openAI/postChat").post(async function (req, response)
 });
 
 
-recordOPENAIRoutes.route("/openAI/postChatNoStream").post(async function (req, response) {
+recordOPENAIRoutes.route("/openAI/postChatNoStream").post(async (req, response) => {
     //chatHistory contains system message
-    let chatHistory = req.body.chatHistory;
-    let currentModel = req.body.model;
+    const chatHistory = req.body.chatHistory;
+    const currentModel = req.body.model;
     //console.log(chatHistory);
     
     // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
@@ -76,6 +76,7 @@ recordOPENAIRoutes.route("/openAI/postChatNoStream").post(async function (req, r
         const result = await openai.chat.completions.create({
             model: currentModel,
             messages: chatHistory,
+            temperature: 0.5,
             stream: false,
         });
 

@@ -41,7 +41,7 @@ recordBlackBaudRoutes.route("/blackbaud-sso").get(async (req, res) => {
             });
             const responseData = await response.json();
             //console.log(responseData);
-
+            //console.log(DEV);
             // Redirect to a React route with any necessary query parameters
             res.redirect(`${DEV ? "http://localhost:3000" : "https://aifl.azurewebsites.net"}/BB?sso_token=${ssoToken}`);
         } catch (error) {

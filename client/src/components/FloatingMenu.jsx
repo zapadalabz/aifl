@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/floating_menu.css';
 
-const FloatingMenu = ({ menuItems }) => {
+const FloatingMenu = ({ menuItems, setView }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const handleMouseEnter = () => {
@@ -11,6 +11,11 @@ const FloatingMenu = ({ menuItems }) => {
     const handleMouseLeave = () => {
         setIsMenuOpen(false);
     };
+
+    const handleMenuClick = (key) => {
+        console.log(key);
+        setView(key);
+    }
 
     return (
         <div 
@@ -22,9 +27,9 @@ const FloatingMenu = ({ menuItems }) => {
             {isMenuOpen && (
                 <div className="menu-items">
                     {Object.keys(menuItems).map((key) => (
-                        <div key={key} className="menu-item">
+                        <div key={key} className="menu-item" onClick={()=>handleMenuClick(key)}>
                             {menuItems[key]}
-                            <div className="menu-item-label">{menuItems[key]}</div>
+                            <div className="menu-item-label">{key}</div>
                         </div>
                     ))}
                 </div>

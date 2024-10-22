@@ -176,11 +176,11 @@ const preprocessLaTeX = (content) => {
     </div>
   );
 
-
+//<BBMenu items={["New","View", "Search"]} user={user}/>
   return (
     <div className="messageListContainer">
       <div className="messageListScrollbar">
-        {messageList.length > 0 ? messageList : <BBMenu items={["New","View", "Search"]} user={user}/>}
+        {messageList.length > 0 ? messageList : welcomeMessage}
         <div ref={messagesEndRef} />
       </div>
     </div>

@@ -4,11 +4,14 @@ import { useLocation } from 'react-router-dom';
 import './AppBB.css';
 
 import ChatPageBB from './components/ChatPageBB';
+import EditComments from './components/EditComments';
+import FloatingMenu from './components/FloatingMenu';
 
 import { getBBUser, getStatus, BB_Login, BB_Logout, getTeacherSections } from './scripts/bb-sso';
 import { getUserByID, updateBBUser } from "./scripts/mongo";
 
 function AppBB() {
+  const [view, setView] = useState("Chat");
   const [deviceType, setDeviceType] = useState(null);
   const [user, setUser] = useState(null);
   const [authenticated, setAuthenticated] = useState(false);
@@ -86,20 +89,22 @@ function AppBB() {
   }, [location]);
 
 
+  if(authenticated){
+    return (
+      <div className='App'>
+        {user.role === "Staff" ? <FloatingMenu menuItems={{"Edit Comments":"Edit", "Chat":"Chat"}}  setView={setView} /> : null}
+        {view === "Chat" && <ChatPageBB chatHistory={chatHistory} setChatHistory={setChatHistory} selectedModel={selectedModel} token={user.token} user={user}/>}
+        {view === "Edit Comments" && <EditComments token={user.token}/>}
+      </div>
+    );
+  } 
+
   return (
     <div className='App'>
-      {authenticated ? 
-        (
-          <ChatPageBB chatHistory={chatHistory} setChatHistory={setChatHistory} selectedModel={selectedModel} token={user.token} user={user}/>
-        ) 
-        : 
-        (
-          <h1>{authMsg}</h1>
-        )
-      }
-      
+      <h1>{authMsg}</h1>
     </div>
   );
+
 }
 
 export default AppBB;

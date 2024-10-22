@@ -220,11 +220,113 @@ export async function postGeneratePossibleComments(title, desc, token){
                     
         
     } catch (err) {
-        alert("Error: " + err.message);
+        alert(`Error: ${err.message}`);
         toast.error(err.message);
     } finally {
         //nothing
     }
     
     return;
+}
+
+export async function ProcessComments(comments, token, setProcessedComments) {
+    const arrayComments = comments.split("\n");
+    const filteredComments = arrayComments.filter(comment => comment.trim() !== "");
+    const commentsWithDetails = filteredComments.map(comment => ({
+        "Name": "",
+        "Length": comment.trim().split(/\s+/).length,
+        "Spelling & Grammar": "",
+        "General Feedback": "",
+        "Formatting & Style": "",
+        "Content Specific": ""
+    }));
+    setProcessedComments(commentsWithDetails);
+    const categoryMessage = {
+        "Spelling & Grammar": "indicate incorrect grammar usage and indicate Canadian spelling mistakes.",
+        "General Feedback": "check that third person is being used, that the comment is in a caring and supportive tone, that no personal pronouns are used, check for inconsistent pronoun usage.",
+        "Formatting & Style": "indicate if sentences are too long, if course names are not capitalized(eg. Math, History), if lowercase is not used for disciplines (eg. mathematics, history), if educational phrases are not in lowercase, if acronyms or academic jargon is used.",
+        "Content Specific": "indicate if there is no mention of student strengths and/or actionable next steps, and if personal or judgement based comments or phrases like 'Congratulations' or 'Keep up the good work' are used."
+    };
+
+    const processBatch = async (batch, category, token) => {
+        const systemMessage = `You are a professional editor who is helping out by listing suggested edits.
+        The user will provide a list of comments that need to be carefully looked over, line-by-line. 
+        In this round of edits, ${categoryMessage[category]}.
+        If there are no suggestions for the comment, then the JSON value should be NONE.
+        Only return an array of JSON objects [{"Name": , ${category}:"List of edits"}...].`;
+        
+        const msg = [{ "role": "system", "content": systemMessage }];
+        const model = 'gpt-4o-mini';
+        msg.push({ "role": "user", "content": JSON.stringify(batch) });
+        //console.log(msg);
+    
+        try {
+            const output = await fetch(`${PROXY}/openAI/postChatNoStream`, {
+                method: "POST",
+                body: JSON.stringify({ "chatHistory": msg, "model": model }),
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }).catch((error) => {
+                toast.error(error.toString());
+            });
+    
+            if (!output) {
+                throw new Error("No output from fetch call");
+            }
+    
+            const result = await output.json();
+            const message = result.message.replace(/\n/g, '');
+
+            const regex = /^```json([\s\S]*?)```$/;
+            // Extract the JSON string using the regular expression
+            const match = message.match(regex);
+            // Parse the message to extract the array of JSON objects
+            let jsonArray;
+            if(match === null){
+                try {
+                    jsonArray = JSON.parse(message);
+                    //console.log(jsonArray);
+                } catch (err) {
+                    throw new Error(`Failed to parse JSON: ${err.message}`);
+                }
+            }else{
+                try {
+                    jsonArray = JSON.parse(match[1]);
+                    //console.log(jsonArray);
+                } catch (err) {
+                    throw new Error(`Failed to parse JSON: ${err.message}`);
+                }
+            }           
+    
+            return jsonArray;
+        } catch (err) {
+            alert(`Error: ${err.message}`);
+            toast.error(err.message);
+            return null;
+        }
+    };
+
+    const batchSize = 10;
+    const categories = ["Spelling & Grammar", "General Feedback", "Formatting & Style", "Content Specific"];
+    const updatedComments = [...commentsWithDetails]; // Clone to avoid direct mutation
+    for (let i = 0; i < commentsWithDetails.length; i += batchSize) {
+        const batch = filteredComments.slice(i, i + batchSize);
+
+        for (const category of categories) {
+            const processedBatch = await processBatch(batch, category, token);
+
+            if (processedBatch) {
+                for(let j = 0; j < batch.length; j++){
+                    updatedComments[i+j].Name = processedBatch[j].Name;
+                    updatedComments[i+j][category] = processedBatch[j][category];
+                }
+                
+            }
+        }
+        console.log(updatedComments);
+        setProcessedComments(updatedComments);
+    }
+    return commentsWithDetails;
 }
