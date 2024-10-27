@@ -9,12 +9,17 @@ import { ProcessComments } from '../scripts/openAI';
 const EditComments = ({ token }) => {
     const [comments, setComments] = useState('');
     const [processedComments, setProcessedComments] = useState([]);
-
-    useEffect(() => {console.log(processedComments)}, [processedComments]);
+    const [processing, setProcessing] = useState(false);
 
     const processComments = async (comments) => {
+        const handleCommentsUpdate = (commentsArrayUpdate) => {
+            //console.log(commentsArrayUpdate);
+            setProcessedComments(commentsArrayUpdate);
+        }
         try {
-            const commentsArray = await ProcessComments(comments, token, setProcessedComments);
+            setProcessing(true);
+            const commentsArray = await ProcessComments(comments, token, handleCommentsUpdate);
+            setProcessing(false);
             return commentsArray;
         } catch (err) {
             alert(`Error: ${err.message}`);
@@ -40,13 +45,12 @@ const EditComments = ({ token }) => {
                         onChange={(e) => setComments(e.target.value)}
                     />
                 </FloatingLabel>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={processing}>{processing?"Processing...":"Suggest Edits"}</Button>
             </Form>
             {processedComments.length > 0 && (
                 <Table striped bordered hover className="mt-3">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Name</th>
                             <th>Length</th>
                             <th>Spelling & Grammar</th>
@@ -58,7 +62,6 @@ const EditComments = ({ token }) => {
                     <tbody>
                         {processedComments.map((comment, index) => (
                             <tr key={index}>
-                                <td>{index + 1}</td>
                                 <td>{comment.Name}</td>
                                 <td>{comment.Length}</td>
                                 <td>{comment["Spelling & Grammar"]}</td>

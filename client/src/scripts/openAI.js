@@ -229,18 +229,18 @@ export async function postGeneratePossibleComments(title, desc, token){
     return;
 }
 
-export async function ProcessComments(comments, token, setProcessedComments) {
+export async function ProcessComments(comments, token, handleCommentsUpdate) {
     const arrayComments = comments.split("\n");
     const filteredComments = arrayComments.filter(comment => comment.trim() !== "");
     const commentsWithDetails = filteredComments.map(comment => ({
         "Name": "",
-        "Length": comment.trim().split(/\s+/).length,
+        "Length": comment.replace(/\s/g, '').length,
         "Spelling & Grammar": "",
         "General Feedback": "",
         "Formatting & Style": "",
         "Content Specific": ""
     }));
-    setProcessedComments(commentsWithDetails);
+    handleCommentsUpdate(commentsWithDetails);
     const categoryMessage = {
         "Spelling & Grammar": "indicate incorrect grammar usage and indicate Canadian spelling mistakes.",
         "General Feedback": "check that third person is being used, that the comment is in a caring and supportive tone, that no personal pronouns are used, check for inconsistent pronoun usage.",
@@ -308,7 +308,7 @@ export async function ProcessComments(comments, token, setProcessedComments) {
         }
     };
 
-    const batchSize = 10;
+    const batchSize = 5;
     const categories = ["Spelling & Grammar", "General Feedback", "Formatting & Style", "Content Specific"];
     const updatedComments = [...commentsWithDetails]; // Clone to avoid direct mutation
     for (let i = 0; i < commentsWithDetails.length; i += batchSize) {
@@ -324,9 +324,9 @@ export async function ProcessComments(comments, token, setProcessedComments) {
                 }
                 
             }
-        }
-        console.log(updatedComments);
-        setProcessedComments(updatedComments);
+            //console.log(i, category);
+            handleCommentsUpdate([...updatedComments]);
+        }        
     }
-    return commentsWithDetails;
+    return updatedComments;
 }
