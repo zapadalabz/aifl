@@ -234,27 +234,32 @@ export async function ProcessComments(comments, token, handleCommentsUpdate) {
     const filteredComments = arrayComments.filter(comment => comment.trim() !== "");
     const commentsWithDetails = filteredComments.map(comment => ({
         "Name": "",
-        "Length": comment.replace(/\s/g, '').length,
-        "Spelling & Grammar": "",
-        "General Feedback": "",
-        "Formatting & Style": "",
-        "Content Specific": ""
+        "Length": comment.length,
+        "Style-Guide": {},
+        "Further Considerations": ""
     }));
     handleCommentsUpdate(commentsWithDetails);
     const categoryMessage = {
-        "Spelling & Grammar": "indicate incorrect grammar usage and indicate Canadian spelling mistakes.",
-        "General Feedback": "check that third person is being used, that the comment is in a caring and supportive tone, that no personal pronouns are used, check for inconsistent pronoun usage.",
-        "Formatting & Style": "indicate if sentences are too long, if course names are not capitalized(eg. Math, History), if lowercase is not used for disciplines (eg. mathematics, history), if educational phrases are not in lowercase, if acronyms or academic jargon is used.",
-        "Content Specific": "indicate if there is no mention of student strengths and/or actionable next steps, and if personal or judgement based comments or phrases like 'Congratulations' or 'Keep up the good work' are used."
+        "Style-Guide": "You are a meticulous editor that is very experienced with the Canadian Press style guide. The user will provide you with a list of students comments.",
+        "Further Considerations": "You are a meticulous editor who is helping out with a list of report card comments. Check that the comment is written in a caring and supportive tone. Indicate if there is no mention of student strengths and/or actionable next steps, and if personal or judgement based comments or phrases like 'Congratulations' or 'Keep up the good work' are used."
     };
 
     const processBatch = async (batch, category, token) => {
-        const systemMessage = `You are a professional editor who is helping out by listing suggested edits.
+        /*const systemMessage = `You are a professional editor who is helping out by listing suggested edits.
         The user will provide a list of comments that need to be carefully looked over, line-by-line. 
         In this round of edits, ${categoryMessage[category]}.
         If there are no suggestions for the comment, then the JSON value should be NONE.
         Only return an array of JSON objects [{"Name": , ${category}:"List of edits"}...].`;
-        
+        */
+        let systemMessage = `${categoryMessage[category]}
+        If there are no suggestions for the comment, then the JSON value should be NONE.
+        Only return an array of JSON objects [{"Name": , ${category}:"Considerations"}...]. Thank you.`;
+        if (category === "Style-Guide") {
+            systemMessage = `${categoryMessage[category]}
+            Only return an array of JSON objects [{"Name": ,${category}: {"Edited Comment": , "Changes Made": }}...]. Thank you.`;
+        }
+       
+
         const msg = [{ "role": "system", "content": systemMessage }];
         const model = 'gpt-4o-mini';
         msg.push({ "role": "user", "content": JSON.stringify(batch) });
@@ -263,7 +268,7 @@ export async function ProcessComments(comments, token, handleCommentsUpdate) {
         try {
             const output = await fetch(`${PROXY}/openAI/postChatNoStream`, {
                 method: "POST",
-                body: JSON.stringify({ "chatHistory": msg, "model": model }),
+                body: JSON.stringify({ "chatHistory": msg, "model": model, "temperature": 0 }),
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -309,7 +314,7 @@ export async function ProcessComments(comments, token, handleCommentsUpdate) {
     };
 
     const batchSize = 5;
-    const categories = ["Spelling & Grammar", "General Feedback", "Formatting & Style", "Content Specific"];
+    const categories = ["Style-Guide", "Further Considerations"];
     const updatedComments = [...commentsWithDetails]; // Clone to avoid direct mutation
     for (let i = 0; i < commentsWithDetails.length; i += batchSize) {
         const batch = filteredComments.slice(i, i + batchSize);
@@ -325,6 +330,7 @@ export async function ProcessComments(comments, token, handleCommentsUpdate) {
                 
             }
             //console.log(i, category);
+            //console.log(updatedComments);
             handleCommentsUpdate([...updatedComments]);
         }        
     }

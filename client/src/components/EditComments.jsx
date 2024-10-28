@@ -5,6 +5,9 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import { toast } from 'react-toastify';
 import { ProcessComments } from '../scripts/openAI';
+import { commentsToDocx } from '../scripts/processFile';
+
+import CommentCard from './CommentCard';
 
 const EditComments = ({ token }) => {
     const [comments, setComments] = useState('');
@@ -33,6 +36,10 @@ const EditComments = ({ token }) => {
         setProcessedComments(result);
     };
 
+    const handleExport = () => {
+        commentsToDocx(processedComments);
+    };
+
     return (
         <div>
             <Form onSubmit={handleSubmit}>
@@ -46,32 +53,14 @@ const EditComments = ({ token }) => {
                     />
                 </FloatingLabel>
                 <Button type="submit" disabled={processing}>{processing?"Processing...":"Suggest Edits"}</Button>
+                <br />
+                <br />
+                <Button type="button" disabled={processing||processedComments.length === 0} onClick={() => handleExport()}>Export to docx</Button>
             </Form>
             {processedComments.length > 0 && (
-                <Table striped bordered hover className="mt-3">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Length</th>
-                            <th>Spelling & Grammar</th>
-                            <th>General Feedback</th>
-                            <th>Formatting & Style</th>
-                            <th>Content Specific</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {processedComments.map((comment, index) => (
-                            <tr key={index}>
-                                <td>{comment.Name}</td>
-                                <td>{comment.Length}</td>
-                                <td>{comment["Spelling & Grammar"]}</td>
-                                <td>{comment["General Feedback"]}</td>
-                                <td>{comment["Formatting & Style"]}</td>
-                                <td>{comment["Content Specific"]}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </Table>
+                processedComments.map((comment, index) => (
+                        <CommentCard comment={comment} key={index} />
+                    ))
             )}
         </div>
     );

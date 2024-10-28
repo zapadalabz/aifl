@@ -2,7 +2,14 @@
 //const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.js");
 import * as pdfjsLib from 'pdfjs-dist/webpack';
 import mammoth from 'mammoth';
+import { saveAs } from 'file-saver';
 import { toast } from 'react-toastify';
+import {
+    Document,
+    Packer,
+    Paragraph,
+    TextRun
+  } from 'docx';
 
 
 
@@ -85,4 +92,32 @@ export async function processFiles(files){
     const docxTexts = await convertDocxToMarkdown(docx);
     const list_filesTexts = pdfTexts.concat(docxTexts);
     return list_filesTexts;
+}
+
+export async function commentsToDocx(commentsArray){
+
+    const paragraphs = commentsArray.map((comment, index) => (
+    new Paragraph({
+        children: [
+            new TextRun({
+                text: `${comment["Style-Guide"]["Edited Comment"]}`,
+                break: 1 // This adds a line break after each comment
+                }),
+            ],
+        })
+    ));
+
+    const doc = new Document({
+        sections: [
+            {
+                properties: {},
+                children: paragraphs,
+            },
+        ],
+    });
+
+    Packer.toBlob(doc).then((blob) => {
+        saveAs(blob, "comments.docx");
+        console.log("Document created successfully");
+    });
 }

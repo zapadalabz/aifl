@@ -62,7 +62,8 @@ recordOPENAIRoutes.route("/openAI/postChatNoStream").post(async (req, response) 
     //chatHistory contains system message
     const chatHistory = req.body.chatHistory;
     const currentModel = req.body.model;
-    //console.log(chatHistory);
+    const temperature = req.body.temperature;
+    //console.log(req.body.temperature);
     
     // Azure OpenAI requires a custom baseURL, api-version query param, and api-key header.
     const openai = new OpenAI({
@@ -76,7 +77,7 @@ recordOPENAIRoutes.route("/openAI/postChatNoStream").post(async (req, response) 
         const result = await openai.chat.completions.create({
             model: currentModel,
             messages: chatHistory,
-            temperature: 0.5,
+            temperature: temperature,
             stream: false,
         });
 
