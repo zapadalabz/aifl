@@ -20,11 +20,11 @@ const RightSideNav = ({selectedModel, setSelectedModel}) => {
                             type="radio"
                             id="model2"
                             name="modelList"
-                            value="GPT4"
-                            checked={selectedModel === 'GPT4'}
+                            value="gpt-4o-mini"
+                            checked={selectedModel === 'gpt-4o-mini'}
                             onChange={handleModelChange}
                         />
-                        <label htmlFor="model2" className="modelLabel">GPT 4.0 Turbo</label>
+                        <label htmlFor="model2" className="modelLabel">GPT4o-mini</label>
                         <br />
                         <input
                             type="radio"

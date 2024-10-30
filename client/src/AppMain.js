@@ -46,7 +46,7 @@ function AppMain() {
 
   const [ user, setUser ] = useState(null);
   const [ chatHistory, setChatHistory] = useState([]);
-  const [selectedModel, setSelectedModel] = useState("GPT4o");
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
 
   const [deviceType, setDeviceType] = useState(null);
 
