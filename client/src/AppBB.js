@@ -17,7 +17,7 @@ function AppBB() {
   const [authenticated, setAuthenticated] = useState(false);
   const [authMsg, setAuthMsg] = useState("Authenticating...");
   const [ chatHistory, setChatHistory] = useState([]);
-  const [ selectedModel, setSelectedModel] = useState("GPT4o");
+  const [ selectedModel, setSelectedModel] = useState("gpt-4o-mini");
   const location = useLocation();
 
   useEffect(() => {
@@ -49,6 +49,9 @@ function AppBB() {
         if ('role' in userRes) {
           setUser(userRes);
           setAuthenticated(true);
+          if (userRes.role === "Staff") {
+            setView("Edit Comments");
+          }
         } else {
           setAuthMsg('Initializing...Please Wait');
           const bbLoginRes = await BB_Login();
@@ -78,6 +81,7 @@ function AppBB() {
           setUser({ ...BB_User, token: token });
           await BB_Logout(BB_Token);
           setAuthenticated(true);
+          setView("Edit Comments");
         }
       } catch (error) {
         console.error('Error during authentication:', error);
@@ -92,7 +96,7 @@ function AppBB() {
   if(authenticated){
     return (
       <div className='App'>
-        {user.role === "Staff" ? <FloatingMenu menuItems={{"Edit Comments":"Edit", "Chat":"Chat"}}  setView={setView} /> : null}
+        {user.role === "Staff1" ? <FloatingMenu menuItems={{"Edit Comments":"Edit", "Chat":"Chat"}}  setView={setView} /> : null}
         {view === "Chat" && <ChatPageBB chatHistory={chatHistory} setChatHistory={setChatHistory} selectedModel={selectedModel} token={user.token} user={user}/>}
         {view === "Edit Comments" && <EditComments token={user.token}/>}
       </div>

@@ -10,9 +10,6 @@ const recordOPENAIRoutes = express.Router();
 const OPENAI_KEY = process.env.OPENAI_KEY;
 const OPENAI_RESOURCE = process.env.OPENAI_RESOURCE;
 
-const OPENAI_KEY2 = process.env.OPENAI_KEY2;
-const OPENAI_RESOURCE2 = process.env.OPENAI_RESOURCE2;
-
 //const model = "GPT35_16K";//process.env.OPENAI_DEPLOYMENT;
 const apiVersion = process.env.OPENAI_API_VERSION;
 
