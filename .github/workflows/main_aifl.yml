@@ -26,12 +26,21 @@ jobs:
 
       - name: npm install, build, and test
         run: |
-          npm run build-prod
+           npm run build-prod
+           if [ $? -ne 0 ]; then
+             echo "Build failed!"
+             exit 1
+           fi
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip .
+        run: |
+           zip -r release.zip .
+           if [ $? -ne 0 ]; then
+             echo "Zipping failed!"
+             exit 1
+           fi
 
-      - name: Show files in workspace
+      - name: Debug: Check files in workspace
         run: ls -lh
 
       - name: Upload artifact for deployment job
