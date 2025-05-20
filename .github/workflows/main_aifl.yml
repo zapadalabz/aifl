@@ -11,43 +11,40 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    env:
-      CI: false
+  runs-on: ubuntu-latest
+  env:
+    CI: false
 
-    steps:
-      - uses: actions/checkout@v4
+  steps:
+    - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-          cache: 'npm' # This will automatically cache npm modules according to the lock file
+    - name: Set up Node.js version
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18.x'
+        cache: 'npm'
 
-      - name: npm install, build, and test
-        run: |
-           npm run build-prod
-           if [ $? -ne 0 ]; then
-             echo "Build failed!"
-             exit 1
-           fi
+    - name: npm install, build, and test
+      run: npm run build-prod
 
-      - name: Zip artifact for deployment
-        run: |
-           zip -r release.zip .
-           if [ $? -ne 0 ]; then
-             echo "Zipping failed!"
-             exit 1
-           fi
+    - name: Zip artifact for deployment
+      run: zip -r release.zip dist  # <-- use your build output folder
 
-      - name: Debug: Check files in workspace
-        run: ls -lh
+    - name: Check release.zip exists and is non-empty
+      run: |
+        if [ ! -s release.zip ]; then
+          echo "release.zip is missing or empty!"
+          exit 1
+        fi
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: node-app
-          path: release.zip
+    - name: Show files in workspace
+      run: ls -lh
+
+    - name: Upload artifact for deployment job
+      uses: actions/upload-artifact@v3
+      with:
+        name: node-app
+        path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
