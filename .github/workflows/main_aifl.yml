@@ -29,7 +29,10 @@ jobs:
           npm run build-prod
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: zip -r release.zip .
+
+      - name: Show files in workspace
+        run: ls -lh
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
