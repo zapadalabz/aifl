@@ -106,6 +106,9 @@ const preprocessLaTeX = (content) => {
   });
 
   const handleSettingsChange = (label, value) => {
+    if (label === "temperature"){
+      return
+    }
     setChatSettings({
       ...chatSettings,
       [label]: value
@@ -115,7 +118,7 @@ const preprocessLaTeX = (content) => {
 
   const handleRestoreDefaultSettings = () => {
     const defaultSettings = {
-      temperature: 0.7,
+      temperature: 1.0,
       system_message: "You are an experienced teacher who loves helping out."
     };
     setChatSettings(defaultSettings);
