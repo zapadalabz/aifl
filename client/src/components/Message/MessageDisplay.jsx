@@ -161,6 +161,7 @@ const preprocessLaTeX = (content) => {
           min={0}
           max={2}
           step={0.1}
+          disabled={chatSettings.model === "o4-mini"}
         />
         <br/>
         <div className="d-flex justify-content-between align-items-center">

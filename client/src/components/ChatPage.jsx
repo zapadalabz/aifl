@@ -21,7 +21,7 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
   const imgInput = useRef();
 
   const openAIEnabled = useRef(false);
-  const [chatSettings, setChatSettings] = useState({system_message:"You are an experienced teacher that responds using Markdown.",temperature:0.7});
+  const [chatSettings, setChatSettings] = useState({system_message:"You are an experienced teacher that responds using Markdown.",temperature:1.0});
   const [msgInputValue, setMsgInputValue] = useState("");
   const [showOverlay, setShowOverlay] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
@@ -41,6 +41,9 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
       if (local_settings.system_message === ""){
         setChatSettings({...local_settings, "system_message":"You are an experienced teacher who loves helping out."});
       }else{
+        if(selectedModel === "o4-mini"){
+          local_settings.temperature = 1.0;
+        }
         setChatSettings(local_settings);
       }      
     }
