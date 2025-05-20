@@ -11,40 +11,32 @@ on:
 
 jobs:
   build:
-  runs-on: ubuntu-latest
-  env:
-    CI: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read #This is required for actions/checkout
 
-  steps:
-    - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-    - name: Set up Node.js version
-      uses: actions/setup-node@v3
-      with:
-        node-version: '20.x'
-        cache: 'npm'
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
 
-    - name: npm install, build, and test
-      run: npm run build-prod
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
-    - name: Zip artifact for deployment
-      run: zip -r release.zip dist  # <-- use your build output folder
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
 
-    - name: Check release.zip exists and is non-empty
-      run: |
-        if [ ! -s release.zip ]; then
-          echo "release.zip is missing or empty!"
-          exit 1
-        fi
-
-    - name: Show files in workspace
-      run: ls -lh
-
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v3
-      with:
-        name: node-app
-        path: release.zip
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,21 +44,31 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: node-app
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_257DAE4C922641B489B382B662BACD0C }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5CB5685675C745EE8A5B9D42D9CD7F83 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_28B75DC2567B4B6581C75BA95BC52827 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        uses: azure/webapps-deploy@v3
         with:
           app-name: 'aifl'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6ACFBC7FC3584013B847B4098121777E }}
           package: .
+          
