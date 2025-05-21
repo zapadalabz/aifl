@@ -218,12 +218,13 @@ export default function ChatPage({chatHistory, setChatHistory, selectedModel, to
                   )}
                 </Overlay>
             </div>
-            
-            <div style={{display: 'none'}}>
-                <input type="file" accept=".pdf, .docx" ref={fileInput} onChange={(e) => handleFileChange(e)} multiple></input>
+            <div>
+            <div style={{opacity:0, width:0, height:0}}>
+                <input type="file" accept=".pdf, .docx" ref={fileInput} onChange={(e) => handleFileChange(e)} multiple/>
             </div>
-            <div style={{display: 'none'}}>
-                <input type="file" accept="image/*" ref={imgInput} onChange={(e) => handleImageChange(e)}></input>
+            <div style={{opacity:0, width:0, height:0}}>
+                <input type="file" accept="image/*" ref={imgInput} onChange={(e) => handleImageChange(e)}/>
+            </div>
             </div>
     </div>
   )
